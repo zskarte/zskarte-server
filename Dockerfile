@@ -11,6 +11,8 @@ RUN yarn install --ignore-engines --frozen-lockfile
 # Copy all files
 ADD . /app
 
+# yarn lint
+RUN yarn lint
 # yarn build
 RUN NODE_ENV=production yarn build
 
