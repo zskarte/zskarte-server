@@ -1,0 +1,11 @@
+node_modules
+.cache
+Dockerfile
+.azure
+.dockerignore
+.git
+.editorconfig
+.strapi-updater.json
+.env
+build
+data

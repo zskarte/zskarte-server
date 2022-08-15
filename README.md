@@ -90,9 +90,9 @@ az aks get-credentials -n mgb-aks1-prod-ch -g mgb-aks1-prod-ch --subscription mg
 # Switch your kubeconfig context (install kubectx first)
 kubectx mgb-aks1-prod-ch
 # Switch to Test namespace (kubens doesn't work)
-kubectl config set-context --current --namespace gmaa-mangelverwaltung-dev
+kubectl config set-context --current --namespace zskarte-dev
 # Switch to Prod namespace (kubens doesn't work)
-kubectl config set-context --current --namespace gmaa-mangelverwaltung-prod
+kubectl config set-context --current --namespace zskarte-prod
 ```
 
 #### Connect to Strapi Backend on AKS
