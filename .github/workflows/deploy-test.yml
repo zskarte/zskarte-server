@@ -2,50 +2,45 @@ on:
   push:
     branches:
       - dev
+
+env:
+  KUBERNETES_NAMESPACE: zskarte-test-2
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@master
 
-    - uses: actions/checkout@master
-    
-    - uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - uses: docker/login-action@v2
-      name: Login to Docker Hub
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - uses: docker/login-action@v2
+        name: Login to Docker Hub
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Build and Push Docker Image to Docker Hub
-      id: build-image
-      run: |
-        docker build "$GITHUB_WORKSPACE/" -f  "Dockerfile" -t zskarte/zskarte-server:${{ github.sha }} --label dockerfile-path=Dockerfile
-        docker push zskarte/zskarte-server:${{ github.sha }}
-    
-    # - uses: azure/k8s-set-context@v1
-    #   id: login
-    #   with:
-    #      kubeconfig: ${{ secrets.aks_zskarteaks_kubeConfig }}
-    
-    # - name: Create namespace
-    #   run: |
-    #     namespacePresent=`kubectl get namespace | grep zskarte-test | wc -l`
-    #     if [ $namespacePresent -eq 0 ]
-    #     then
-    #         echo `kubectl create namespace zskarte-test`
-    #     fi
+      - name: Build and Push Docker Image to Docker Hub
+        id: build-image
+        run: |
+          docker build "$GITHUB_WORKSPACE/" -f  "Dockerfile" -t zskarte/zskarte-server:${{ github.sha }} --label dockerfile-path=Dockerfile
+          docker push zskarte/zskarte-server:${{ github.sha }}
 
-    # - uses: azure/k8s-create-secret@v1
-    #   with:
-    #     namespace: zskarte-test
-    #     container-registry-url: zskarte.azurecr.io
-    #     container-registry-username: ${{ steps.create-acr.outputs.acr_username }}
-    #     container-registry-password: ${{ steps.create-acr.outputs.acr_password }}
-    #     secret-name: zskarteaksdockerauth
-       
+      - name: Set Kubernetes Context
+        uses: azure/k8s-set-context@v1
+        with:
+          kubeconfig: ${{ secrets.aks_zskarteaks_kubeConfig }}
+
+      - name: Create Namespace if not Present
+        run: |
+          namespacePresent=`kubectl get namespace | grep ${{ ev.KUBERNETES_NAMESPACE }} | wc -l`
+          if [ $namespacePresent -eq 0 ]
+          then
+              echo `kubectl create namespace ${{ ev.KUBERNETES_NAMESPACE }}`
+          fi
+
     # - uses: azure/k8s-deploy@v1.2
     #   with:
     #     namespace: zskarte-test
@@ -55,4 +50,4 @@ jobs:
     #     images: |
     #       zskarte.azurecr.io/zskarteaks:${{ github.sha }}
     #     imagepullsecrets: |
-    #       zskarteaksdockerauth   
+    #       zskarteaksdockerauth
