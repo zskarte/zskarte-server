@@ -19,17 +19,11 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    # - uses: azure/docker-login@v1
-    #   with:
-    #     login-server: zskarte.azurecr.io
-    #     username: ${{ steps.create-acr.outputs.acr_username }}
-    #     password: ${{ steps.create-acr.outputs.acr_password }}
-
-    # - name: Build and push image to ACR
-    #   id: build-image
-    #   run: |
-    #     docker build "$GITHUB_WORKSPACE/" -f  "Dockerfile" -t zskarte.azurecr.io/zskarteaks:${{ github.sha }} --label dockerfile-path=Dockerfile
-    #     docker push zskarte.azurecr.io/zskarteaks:${{ github.sha }}
+    - name: Build and Push Docker Image to Docker Hub
+      id: build-image
+      run: |
+        docker build "$GITHUB_WORKSPACE/" -f  "Dockerfile" -t zskarte-server:${{ github.sha }} --label dockerfile-path=Dockerfile
+        docker push zskarte-server:${{ github.sha }}
     
     # - uses: azure/k8s-set-context@v1
     #   id: login
