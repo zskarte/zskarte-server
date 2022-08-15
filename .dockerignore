@@ -9,3 +9,4 @@ Dockerfile
 .env
 build
 data
+docker-compose.yml

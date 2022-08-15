@@ -98,6 +98,8 @@ docker exec -it pgadmin sh
 /venv/bin/python setup.py --dump-servers servers.json --user info@zskarte.ch
 ```
 
+## Azure
+
 ### Kubernetes Connect
 
 Connect to the AKS cluster with the following commands
@@ -107,22 +109,13 @@ Connect to the AKS cluster with the following commands
 brew update && brew install azure-cli
 
 az login
-az aks get-credentials -n mgb-aks1-prod-ch -g mgb-aks1-prod-ch --subscription mgb-coreinfra-prod-ch
+az aks get-credentials --subscription zskarte --resource-group zskare --name zskare-aks --admin
 # Switch your kubeconfig context (install kubectx first)
-kubectx mgb-aks1-prod-ch
+kubectx zskarte-aks-admin
 # Switch to Test namespace (kubens doesn't work)
-kubectl config set-context --current --namespace zskarte-dev
+kubectl config set-context --current --namespace zskarte-test
 # Switch to Prod namespace (kubens doesn't work)
 kubectl config set-context --current --namespace zskarte-prod
-```
-
-#### Connect to Strapi Backend on AKS
-
-The strapi /admin UI is secured from the ingress. To access the Ui anyways
-you have to use the following command.
-
-```bash
-kubectl port-forward service/migros-defectmgmt-api-service 1337:80
 ```
 
 #### Connect to pgadmin on AKS
@@ -131,4 +124,79 @@ kubectl port-forward service/migros-defectmgmt-api-service 1337:80
 kubectl port-forward service/pgadmin 7050:80
 ```
 
-Add the server config with data from bitwarden => hostname, username & password
+### Cheap AKS Cluster
+
+https://georgepaw.medium.com/how-to-run-the-cheapest-kubernetes-cluster-at-1-per-day-tutorial-9673f062b903
+
+```bash
+# Fill env variables
+export SUBSCRIPTION=66961ec5-0870-43fb-a5cc-35e73d6d49d2
+export LOCATION=switzerlandnorth
+export RESOURCE_GROUP=zskarte
+export AKS_CLUSTER=zskarte-aks
+export VM_SIZE=Standard_B2s
+
+# Create SSH key pair to login to instance in the future filename: zskarte
+ssh-keygen -t rsa -b 4096 -C "zskarte"
+
+# Create resource group
+az group create --name $RESOURCE_GROUP \
+		--subscription $SUBSCRIPTION \
+		--location $LOCATION
+
+# Create a basic single-node AKS cluster
+az aks create \
+	--subscription $SUBSCRIPTION \
+	--resource-group $RESOURCE_GROUP \
+	--name $AKS_CLUSTER \
+	--vm-set-type VirtualMachineScaleSets \
+	--node-count 1 \
+	--ssh-key-value zskarte.pub \
+	--load-balancer-sku basic \
+	--enable-cluster-autoscaler \
+	--min-count 1 \
+	--max-count 1 \
+    --node-vm-size $VM_SIZE \
+    --nodepool-name default \
+    --node-osdisk-size 32 \
+    --node-osdisk-type managed
+
+# Get credentials of AKS cluster
+az aks get-credentials \
+	--subscription $SUBSCRIPTION \
+	--resource-group $RESOURCE_GROUP \
+	--name $AKS_CLUSTER \
+    --admin
+```
+
+### Disable AKS SLA
+```bash
+AKSResourceID=$(az aks show --subscription $SUBSCRIPTION --name $AKS_CLUSTER --resource-group $RESOURCE_GROUP --query id -o tsv)
+az resource update --ids $AKSResourceID --subscription $SUBSCRIPTION --set sku.tier="Free"
+```
+
+## Helm add Bitnami repo
+
+```bash
+helm repo add bitnami https://charts.bitnami.com/bitnami
+```
+
+### Install NGINX Ingress
+```bash
+helm upgrade --install nginx-ingress bitnami/nginx-ingress-controller --create-namespace -n nginx-ingress -f .azure/aks/nginx/values.yml
+```
+
+### Install Cert-Manager
+```bash
+helm upgrade --install cert-manager bitnami/cert-manager --create-namespace -n cert-manager -f .azure/aks/cert-manager/values.yml
+kubectl apply -f .azure/aks/cert-manager/letsencrpyt-staging.yml
+kubectl apply -f .azure/aks/cert-manager/letsencrpyt-prod.yml
+```
+
+### Create postgresql as a service
+
+```bash
+# unsername: zskarte_admin
+# password: 4LLBdzLXC4oB7qAiNh77
+
+```
