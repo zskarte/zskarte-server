@@ -17,7 +17,7 @@ jobs:
       name: Login to Docker Hub
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     # - uses: azure/docker-login@v1
     #   with:
