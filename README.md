@@ -192,11 +192,3 @@ helm upgrade --install cert-manager bitnami/cert-manager --create-namespace -n c
 kubectl apply -f .azure/aks/cert-manager/letsencrpyt-staging.yml
 kubectl apply -f .azure/aks/cert-manager/letsencrpyt-prod.yml
 ```
-
-### Create postgresql as a service
-
-```bash
-# unsername: zskarte_admin
-# password: 4LLBdzLXC4oB7qAiNh77
-
-```
