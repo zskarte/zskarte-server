@@ -35,10 +35,10 @@ jobs:
 
       - name: Create Namespace if not Present
         run: |
-          namespacePresent=`kubectl get namespace | grep ${{ ev.KUBERNETES_NAMESPACE }} | wc -l`
+          namespacePresent=`kubectl get namespace | grep ${{ env.KUBERNETES_NAMESPACE }} | wc -l`
           if [ $namespacePresent -eq 0 ]
           then
-              echo `kubectl create namespace ${{ ev.KUBERNETES_NAMESPACE }}`
+              echo `kubectl create namespace ${{ env.KUBERNETES_NAMESPACE }}`
           fi
 
     # - uses: azure/k8s-deploy@v1.2
