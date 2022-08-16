@@ -19,6 +19,12 @@ export default ({ env }) => ({
             strapi.log.info(`[io] new connection with id ${socket.id}`);
           },
         },
+        {
+          name: 'custom-event',
+          handler: ({ strapi }, data) => {
+            strapi.log.info(`Received Data from Client: '${data.test}'`);
+          },
+        },
       ],
     },
   },
