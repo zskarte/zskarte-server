@@ -170,6 +170,7 @@ az aks get-credentials \
 ```
 
 ### Disable AKS SLA
+
 ```bash
 AKSResourceID=$(az aks show --subscription $SUBSCRIPTION --name $AKS_CLUSTER --resource-group $RESOURCE_GROUP --query id -o tsv)
 az resource update --ids $AKSResourceID --subscription $SUBSCRIPTION --set sku.tier="Free"
@@ -182,11 +183,13 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 ```
 
 ### Install Contour Ingress
+
 ```bash
 helm upgrade --install contour bitnami/contour --create-namespace -n contour -f .azure/aks/contour/values.yml
 ```
 
 ### Install Cert-Manager
+
 ```bash
 helm upgrade --install cert-manager bitnami/cert-manager --create-namespace -n cert-manager -f .azure/aks/cert-manager/values.yml
 kubectl apply -f .azure/aks/cert-manager/letsencrpyt-staging.yml
