@@ -17,6 +17,8 @@ env:
   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
   ADMIN_JWT_SECRET: ${{ secrets.STRAPI_ADMIN_JWT_SECRET_DEV }}
   JWT_SECRET: ${{ secrets.STRAPI_JWT_SECRET_DEV }}
+  APP_KEYS: ${{ secrets.STRAPI_APP_KEYS_DEV }}
+  API_TOKEN_SALT: ${{ secrets.STRAPI_API_TOKEN_SALT_DEV }}
   BASE_URL: https://api-dev.zskarte.ch
 
 jobs:
