@@ -181,9 +181,9 @@ az resource update --ids $AKSResourceID --subscription $SUBSCRIPTION --set sku.t
 helm repo add bitnami https://charts.bitnami.com/bitnami
 ```
 
-### Install NGINX Ingress
+### Install Contour Ingress
 ```bash
-helm upgrade --install nginx-ingress bitnami/nginx-ingress-controller --create-namespace -n nginx-ingress -f .azure/aks/nginx/values.yml
+helm upgrade --install contour bitnami/contour --create-namespace -n contour -f .azure/aks/contour/values.yml
 ```
 
 ### Install Cert-Manager
