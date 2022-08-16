@@ -20,9 +20,10 @@
     "@strapi/plugin-users-permissions": "4.3.4",
     "@strapi/strapi": "4.3.4",
     "pg": "8.6.0",
-    "prettier": "^2.7.1"
+    "strapi-plugin-io": "^1.1.1"
   },
   "devDependencies": {
+    "prettier": "^2.7.1",
     "@strapi-community/eslint-config": "^0.4.3",
     "eslint": "^8.22.0"
   },
