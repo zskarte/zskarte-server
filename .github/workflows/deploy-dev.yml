@@ -4,7 +4,11 @@ on:
       - dev
 
 env:
-  KUBERNETES_NAMESPACE: zskarte-test-2
+  STAGE: dev
+  KUBERNETES_NAMESPACE: zskarte-${{ env.STAGE }}
+  IMAGE_NAME: zskarte/zskarte-server
+  FULL_IMAGE_NAME: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+  LETSENCRYPT_STAGE: staging
 
 jobs:
   build-and-deploy:
@@ -25,8 +29,8 @@ jobs:
       - name: Build and Push Docker Image to Docker Hub
         id: build-image
         run: |
-          docker build "$GITHUB_WORKSPACE/" -f  "Dockerfile" -t zskarte/zskarte-server:${{ github.sha }} --label dockerfile-path=Dockerfile
-          docker push zskarte/zskarte-server:${{ github.sha }}
+          docker build "$GITHUB_WORKSPACE/" -f  "Dockerfile" -t ${{ env.IMAGE_NAME }} --label dockerfile-path=Dockerfile
+          docker push ${{ env.IMAGE_NAME }}
 
       - name: Set Kubernetes Context
         uses: azure/k8s-set-context@v1
@@ -41,9 +45,21 @@ jobs:
               echo `kubectl create namespace ${{ env.KUBERNETES_NAMESPACE }}`
           fi
 
+      - name: Replace and Apply Kubernetes Manifests
+        uses: swdotcom/update-and-apply-kubernetes-configs@v1
+        with:
+          k8-config-file-paths: |
+            .azure/k8s/deployment.yml
+            .azure/k8s/service.yml
+          replacement-method: defined
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+          CHANGE_CAUSE: ${{ github.event.release.tag_name }}
+
+
     # - uses: azure/k8s-deploy@v1.2
     #   with:
-    #     namespace: zskarte-test
+    #     namespace: zskarte-dev
     #     manifests: |
     #       .azure/k8s/deployment.yml
     #       .azure/k8s/service.yml
