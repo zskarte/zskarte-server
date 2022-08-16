@@ -6,7 +6,7 @@ on:
 env:
   STAGE: dev
   KUBERNETES_NAMESPACE: zskarte-dev
-  IMAGE_NAME: zskarte/zskarte-server
+  IMAGE_NAME: zskarte-server
   FULL_IMAGE_NAME: zskarte/zskarte-server:${{ github.sha }}
   LETSENCRYPT_STAGE: staging
 
