@@ -5,10 +5,19 @@ on:
 
 env:
   STAGE: dev
+  DOCKERHUB_USERNAME: zskarte
   KUBERNETES_NAMESPACE: zskarte-dev
   APP_NAME: zskarte-server
   FULL_IMAGE_NAME: zskarte/zskarte-server:${{ github.sha }}
   LETSENCRYPT_STAGE: staging
+  DB_HOST: zskarte.postgres.database.azure.com
+  DB_PORT: "5432"
+  DB_NAME: zskarte_dev
+  DB_USER: zskarte_admin
+  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  ADMIN_JWT_SECRET: ${{ secrets.STRAPI_ADMIN_JWT_SECRET_DEV }}
+  JWT_SECRET: ${{ secrets.STRAPI_JWT_SECRET_DEV }}
+  BASE_URL: https://api-dev.zskarte.ch
 
 jobs:
   build-and-deploy:
@@ -23,7 +32,7 @@ jobs:
       - uses: docker/login-action@v2
         name: Login to Docker Hub
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and Push Docker Image to Docker Hub
@@ -49,21 +58,10 @@ jobs:
         uses: swdotcom/update-and-apply-kubernetes-configs@v1
         with:
           k8-config-file-paths: |
+            .azure/k8s/strapi-envs.yml
             .azure/k8s/deployment.yml
             .azure/k8s/service.yml
           replacement-method: defined
         env:
           IMAGE_TAG: ${{ github.sha }}
           CHANGE_CAUSE: ${{ github.event.release.tag_name }}
-
-
-    # - uses: azure/k8s-deploy@v1.2
-    #   with:
-    #     namespace: zskarte-dev
-    #     manifests: |
-    #       .azure/k8s/deployment.yml
-    #       .azure/k8s/service.yml
-    #     images: |
-    #       zskarte.azurecr.io/zskarteaks:${{ github.sha }}
-    #     imagepullsecrets: |
-    #       zskarteaksdockerauth
