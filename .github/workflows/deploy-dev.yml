@@ -6,7 +6,7 @@ on:
 env:
   STAGE: dev
   KUBERNETES_NAMESPACE: zskarte-dev
-  IMAGE_NAME: zskarte-server
+  APP_NAME: zskarte-server
   FULL_IMAGE_NAME: zskarte/zskarte-server:${{ github.sha }}
   LETSENCRYPT_STAGE: staging
 
@@ -29,8 +29,8 @@ jobs:
       - name: Build and Push Docker Image to Docker Hub
         id: build-image
         run: |
-          docker build "$GITHUB_WORKSPACE/" -f  "Dockerfile" -t ${{ env.IMAGE_NAME }} --label dockerfile-path=Dockerfile
-          docker push ${{ env.IMAGE_NAME }}
+          docker build "$GITHUB_WORKSPACE/" -f  "Dockerfile" -t ${{ env.FULL_IMAGE_NAME }} --label dockerfile-path=Dockerfile
+          docker push ${{ env.FULL_IMAGE_NAME }}
 
       - name: Set Kubernetes Context
         uses: azure/k8s-set-context@v1
