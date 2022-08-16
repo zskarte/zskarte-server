@@ -11,7 +11,7 @@ env:
   FULL_IMAGE_NAME: zskarte/zskarte-server:${{ github.sha }}
   LETSENCRYPT_STAGE: staging
   DB_HOST: zskarte.postgres.database.azure.com
-  DB_PORT: "5432"
+  DB_PORT: 5432
   DB_NAME: zskarte_dev
   DB_USER: zskarte_admin
   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
