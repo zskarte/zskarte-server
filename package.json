@@ -20,12 +20,14 @@
     "@strapi/plugin-users-permissions": "4.3.4",
     "@strapi/strapi": "4.3.4",
     "pg": "8.6.0",
-    "strapi-plugin-io": "^1.1.1"
+    "strapi-plugin-io": "^1.1.1",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@strapi-community/eslint-config": "^0.4.3",
     "eslint": "^8.22.0",
-    "prettier": "^2.7.1"
+    "prettier": "^2.7.1",
+    "@types/lodash": "^4.14.183"
   },
   "strapi": {
     "uuid": "bcb31078-0352-4434-9fd2-7c4c0f1e1d5b"
