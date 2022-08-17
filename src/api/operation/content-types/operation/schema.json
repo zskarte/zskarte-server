@@ -1,0 +1,42 @@
+{
+  "kind": "collectionType",
+  "collectionName": "operations",
+  "info": {
+    "singularName": "operation",
+    "pluralName": "operations",
+    "displayName": "Operation",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "active",
+        "archived",
+        "deleted"
+      ]
+    },
+    "mapStates": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::map-state.map-state",
+      "mappedBy": "operation"
+    },
+    "organization": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::organization.organization",
+      "inversedBy": "operations"
+    }
+  }
+}

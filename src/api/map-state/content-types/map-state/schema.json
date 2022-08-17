@@ -1,0 +1,34 @@
+{
+  "kind": "collectionType",
+  "collectionName": "map_states",
+  "info": {
+    "singularName": "map-state",
+    "pluralName": "map-states",
+    "displayName": "MapState"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "from": {
+      "type": "string"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "full",
+        "patch"
+      ]
+    },
+    "data": {
+      "type": "json"
+    },
+    "operation": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::operation.operation",
+      "inversedBy": "mapStates"
+    }
+  }
+}
