@@ -19,16 +19,19 @@
       "enum": [
         "full",
         "patch"
-      ]
+      ],
+      "default": "full"
     },
     "data": {
-      "type": "json"
+      "type": "json",
+      "required": true
     },
     "operation": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::operation.operation",
-      "inversedBy": "mapStates"
+      "inversedBy": "mapStates",
+      "required": true
     }
   }
 }

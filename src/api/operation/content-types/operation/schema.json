@@ -13,7 +13,8 @@
   "pluginOptions": {},
   "attributes": {
     "name": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "description": {
       "type": "richtext"
@@ -24,7 +25,8 @@
         "active",
         "archived",
         "deleted"
-      ]
+      ],
+      "default": "active"
     },
     "mapStates": {
       "type": "relation",
@@ -36,7 +38,8 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::organization.organization",
-      "inversedBy": "operations"
+      "inversedBy": "operations",
+      "required": true
     },
     "mapState": {
       "type": "json"
