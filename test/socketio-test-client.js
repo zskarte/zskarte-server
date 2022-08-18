@@ -10,7 +10,7 @@ const socket = io(SERVER_URL, {
     token: JWT_TOKEN,
   },
   transports: ['websocket'],
-  query: "operationId=1",
+  query: "operationId=1&identifier=12345",
 });
 
 socket.on('connect', () => {

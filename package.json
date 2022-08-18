@@ -19,15 +19,16 @@
     "@strapi/plugin-i18n": "4.3.4",
     "@strapi/plugin-users-permissions": "4.3.4",
     "@strapi/strapi": "4.3.4",
+    "immer": "^9.0.15",
+    "lodash": "^4.17.21",
     "pg": "8.6.0",
-    "strapi-plugin-io": "^1.1.1",
-    "lodash": "^4.17.21"
+    "strapi-plugin-io": "^1.1.1"
   },
   "devDependencies": {
     "@strapi-community/eslint-config": "^0.4.3",
+    "@types/lodash": "^4.14.183",
     "eslint": "^8.22.0",
-    "prettier": "^2.7.1",
-    "@types/lodash": "^4.14.183"
+    "prettier": "^2.7.1"
   },
   "strapi": {
     "uuid": "bcb31078-0352-4434-9fd2-7c4c0f1e1d5b"
