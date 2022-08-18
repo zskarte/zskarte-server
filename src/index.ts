@@ -1,4 +1,4 @@
-import { loadOperations } from './state/operations';
+import { loadOperations } from './state/operation';
 
 export default {
   /**

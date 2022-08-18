@@ -1,4 +1,4 @@
-import { lifecycleOperation } from '../../../../state/operations';
+import { lifecycleOperation } from '../../../../state/operation';
 
 export default {
   afterCreate: ({ action, result }) => lifecycleOperation(action, result),

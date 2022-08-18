@@ -5,7 +5,7 @@
  */
 
 import { factories } from '@strapi/strapi';
-import { updateMapState } from '../../../state/operations';
+import { updateMapState } from '../../../state/operation';
 
 export default factories.createCoreController('api::operation.operation', ({ strapi }) => ({
   patch(ctx) {

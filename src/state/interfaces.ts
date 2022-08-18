@@ -60,7 +60,7 @@ export interface Connection {
   identifier: string;
 }
 
-export interface SessionCache {
+export interface OperationCache {
   operation: Operation;
   connections: Connection[];
   users: User[];
