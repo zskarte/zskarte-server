@@ -40,6 +40,9 @@
       "target": "api::organization.organization",
       "inversedBy": "operations",
       "required": true
+    },
+    "mapState": {
+      "type": "json"
     }
   }
 }
