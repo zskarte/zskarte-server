@@ -18,5 +18,6 @@ export default factories.createCoreController('api::operation.operation', ({ str
     const patches = ctx.request.body;
     updateMapState(operationid, identifier, patches);
     ctx.status = 200;
+    return {};
   },
 }));

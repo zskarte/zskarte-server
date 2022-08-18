@@ -35,7 +35,7 @@ socket.on('connect', () => {
   axios
     .post(`${SERVER_URL}/api/operations/state/patch`, patches, axiosConfig)
     .then(function (response) {
-      console.log('Patches Sent');
+      console.log('Patches Sent', response.data);
     })
     .catch(function (error) {
       console.log(error);
