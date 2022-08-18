@@ -7,6 +7,10 @@ export enum StrapiLifecycleHook {
   AFTER_DELETE = 'afterDelete',
 }
 
+export enum WEBSOCKET_EVENT {
+  STATE_PATCHES = 'state:patches',
+}
+
 export interface StrapiObject {
   id: number;
   createdAt: Date;
@@ -61,4 +65,5 @@ export interface SessionCache {
   connections: Connection[];
   users: User[];
   mapState: object;
+  mapStateChanged: boolean;
 }

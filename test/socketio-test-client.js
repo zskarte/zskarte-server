@@ -6,9 +6,10 @@ let rawPatches = fs.readFileSync('patches.json');
 let patches = JSON.parse(rawPatches);
 
 const SERVER_URL = 'http://0.0.0.0:1337';
+// const SERVER_URL = 'https://api-dev.zskarte.ch';
 const JWT_TOKEN =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjYwODA1NDU1LCJleHAiOjE2NjMzOTc0NTV9.F9L-zcSY8252FiNcthmQAWgvBbC-ZsSPOd1GwFCST-I';
-const IDENTIFIER = '12345';
+const IDENTIFIER = (Math.random() + 1).toString(36).substring(2);
 
 const socket = io(SERVER_URL, {
   auth: {
@@ -19,7 +20,7 @@ const socket = io(SERVER_URL, {
 });
 
 socket.on('connect', () => {
-  socket.on('patches', (patches) => {
+  socket.on('state:patches', (patches) => {
     console.log('Patches received', patches);
   });
   console.log('Connected');

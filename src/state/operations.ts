@@ -1,6 +1,6 @@
 import { Strapi } from '@strapi/strapi';
 import _ from 'lodash';
-import { Operation, StrapiLifecycleHook, User } from './interfaces';
+import { Operation, SessionCache, StrapiLifecycleHook, User } from './interfaces';
 import { sessionCaches } from './session';
 import { applyPatches, Patch, enablePatches } from 'immer';
 import { broadcastPatches } from './socketio';
@@ -24,7 +24,7 @@ const loadOperations = async (strapi: Strapi) => {
 const lifecycleOperation = async (lifecycleHook: StrapiLifecycleHook, operation: Operation) => {
   if (lifecycleHook === StrapiLifecycleHook.AFTER_CREATE) {
     const mapState = operation.mapState || {};
-    sessionCaches[operation.id] = { operation, connections: [], users: [], mapState };
+    sessionCaches[operation.id] = { operation, connections: [], users: [], mapState, mapStateChanged: false };
     if (!operation.organization) return;
     const allowedUsers = (await strapi.db.query('plugin::users-permissions.user').findMany({
       where: { organization: operation.organization.id },
@@ -40,21 +40,24 @@ const lifecycleOperation = async (lifecycleHook: StrapiLifecycleHook, operation:
 };
 
 const updateMapState = async (operationId: string, identifier: string, patches: Patch[]) => {
-  const sessionCache = sessionCaches[operationId];
+  const sessionCache = sessionCaches[operationId] as SessionCache;
   if (!sessionCache) return;
   sessionCache.mapState = applyPatches(sessionCache.mapState, patches);
+  sessionCache.mapStateChanged = true;
   broadcastPatches(sessionCache, identifier, patches);
 };
 
 const persistMapStates = async (strapi: Strapi) => {
   for (const [operationId, sessionCache] of Object.entries(sessionCaches)) {
+    if (!sessionCache.mapStateChanged) continue;
     await strapi.entityService.update('api::operation.operation', operationId, {
       data: {
         mapState: sessionCache.mapState,
       },
     });
+    sessionCache.mapStateChanged = false;
+    strapi.log.info(`MapState of operation ${operationId} Persisted`);
   }
-  strapi.log.info('MapStates Persisted');
 };
 
 export { loadOperations, lifecycleOperation, updateMapState };

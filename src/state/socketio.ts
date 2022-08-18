@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io/dist/socket';
 import _ from 'lodash';
 import { sessionCaches } from './session';
-import { SessionCache, User } from './interfaces';
+import { SessionCache, User, WEBSOCKET_EVENT } from './interfaces';
 import { Patch } from 'immer';
 
 const socketConnection = async ({ strapi }, socket: Socket) => {
@@ -45,7 +45,7 @@ const socketDisconnect = async (sessionCache: SessionCache, socket: Socket) => {
 const broadcastPatches = (sessionCache: SessionCache, identifier: string, patches: Patch[]) => {
   const connections = _.filter(sessionCache.connections, (c) => c.identifier !== identifier);
   for (const connection of connections) {
-    connection.socket.emit('patches', patches);
+    connection.socket.emit(WEBSOCKET_EVENT.STATE_PATCHES, patches);
   }
 };
 
