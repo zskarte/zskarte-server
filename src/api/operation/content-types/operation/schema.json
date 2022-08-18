@@ -28,12 +28,6 @@
       ],
       "default": "active"
     },
-    "mapStates": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::map-state.map-state",
-      "mappedBy": "operation"
-    },
     "organization": {
       "type": "relation",
       "relation": "manyToOne",

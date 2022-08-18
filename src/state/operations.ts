@@ -2,9 +2,9 @@ import { Strapi } from '@strapi/strapi';
 import _ from 'lodash';
 import { Operation, StrapiLifecycleHook, User } from './interfaces';
 import { sessionCaches } from './session';
-import { applyPatches, Patch, enableMapSet } from 'immer';
+import { applyPatches, Patch, enablePatches } from 'immer';
 import { broadcastPatches } from './socketio';
-enableMapSet();
+enablePatches();
 
 const loadOperations = async (strapi: Strapi) => {
   try {
@@ -15,6 +15,7 @@ const loadOperations = async (strapi: Strapi) => {
     for (const operation of activeOperations) {
       await lifecycleOperation(StrapiLifecycleHook.AFTER_CREATE, operation);
     }
+    setInterval(() => persistMapStates(strapi), 5000);
   } catch (error) {
     strapi.log.error(error);
   }
@@ -41,8 +42,19 @@ const lifecycleOperation = async (lifecycleHook: StrapiLifecycleHook, operation:
 const updateMapState = async (operationId: string, identifier: string, patches: Patch[]) => {
   const sessionCache = sessionCaches[operationId];
   if (!sessionCache) return;
-  // sessionCache.mapState = applyPatches(sessionCache.mapState, patches);
+  sessionCache.mapState = applyPatches(sessionCache.mapState, patches);
   broadcastPatches(sessionCache, identifier, patches);
+};
+
+const persistMapStates = async (strapi: Strapi) => {
+  for (const [operationId, sessionCache] of Object.entries(sessionCaches)) {
+    await strapi.entityService.update('api::operation.operation', operationId, {
+      data: {
+        mapState: sessionCache.mapState,
+      },
+    });
+  }
+  strapi.log.info('MapStates Persisted');
 };
 
 export { loadOperations, lifecycleOperation, updateMapState };
