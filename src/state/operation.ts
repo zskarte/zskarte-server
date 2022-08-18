@@ -5,6 +5,8 @@ import _ from 'lodash';
 import { Operation, OperationCache, StrapiLifecycleHook, User } from './interfaces';
 import { broadcastPatches } from './socketio';
 
+const WEEK = 1000 * 60 * 60 * 24 * 7;
+
 enablePatches();
 
 const operationCaches: { [key: number]: OperationCache } = {};
@@ -54,4 +56,41 @@ const updateMapState = async (operationId: string, identifier: string, patches: 
   broadcastPatches(operationCache, identifier, patches);
 };
 
-export { operationCaches, loadOperations, lifecycleOperation, updateMapState };
+/** Persist the map state to the database if something has changed */
+const persistMapStates = async (strapi: Strapi) => {
+  try {
+    for (const [operationId, operationCache] of Object.entries(operationCaches)) {
+      if (!operationCache.mapStateChanged) continue;
+      await strapi.entityService.update('api::operation.operation', operationId, {
+        data: {
+          mapState: operationCache.mapState,
+        },
+      });
+      operationCache.mapStateChanged = false;
+      strapi.log.info(`MapState of operation ${operationId} Persisted`);
+    }
+  } catch (error) {
+    strapi.log.error(error);
+  }
+};
+
+/** Archive operations who are active and */
+const archiveOperations = async (strapi: Strapi) => {
+  try {
+    const operations = (await strapi.db.query('api::operation.operation').findMany({
+      where: { status: 'active' },
+    })) as Operation[];
+    for (const operation of operations) {
+      if (new Date(operation.updatedAt).getTime() + WEEK > new Date().getTime()) continue;
+      await strapi.entityService.update('api::operation.operation', operation.id, {
+        data: {
+          status: 'archived',
+        },
+      });
+    }
+  } catch (error) {
+    strapi.log.error(error);
+  }
+};
+
+export { operationCaches, loadOperations, lifecycleOperation, updateMapState, persistMapStates, archiveOperations };
