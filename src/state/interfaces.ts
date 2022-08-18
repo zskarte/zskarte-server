@@ -40,8 +40,10 @@ export interface Organization extends StrapiObject {
   users: User[];
 }
 
-export interface Patch extends StrapiObject {
-  data: object;
+export interface Patch {
+  op: string;
+  path: string[];
+  value: object | object[];
 }
 
 export interface Operation extends StrapiObject {

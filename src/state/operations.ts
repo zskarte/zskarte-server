@@ -1,6 +1,6 @@
 import { Strapi } from '@strapi/strapi';
 import _ from 'lodash';
-import { Operation, StrapiLifecycleHook, User } from './interfaces';
+import { Operation, Patch, StrapiLifecycleHook, User } from './interfaces';
 import { sessionCaches } from './session';
 
 const loadOperations = async (strapi: Strapi) => {
@@ -33,5 +33,7 @@ const lifecycleOperation = async (lifecycleHook: StrapiLifecycleHook, operation:
     delete sessionCaches[operation.id];
   }
 };
+
+const receivePatches = async (strapi: Strapi, patches: Patch[]) => {};
 
 export { loadOperations, lifecycleOperation };
