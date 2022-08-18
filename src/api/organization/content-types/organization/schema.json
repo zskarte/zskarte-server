@@ -30,7 +30,12 @@
     },
     "defaultLocale": {
       "type": "enumeration",
-      "enum": ["de-CH", "fr-CH", "it-CH", "en-US"],
+      "enum": [
+        "de-CH",
+        "fr-CH",
+        "it-CH",
+        "en-US"
+      ],
       "default": "de-CH"
     },
     "url": {
@@ -40,7 +45,9 @@
       "type": "media",
       "multiple": false,
       "required": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "operations": {
       "type": "relation",

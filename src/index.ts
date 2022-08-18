@@ -1,3 +1,4 @@
+import { loadJobs } from './state/jobs';
 import { loadOperations } from './state/operation';
 
 export default {
@@ -18,5 +19,6 @@ export default {
    */
   async bootstrap({ strapi }) {
     await loadOperations(strapi);
+    loadJobs();
   },
 };

@@ -4,6 +4,7 @@ import { operationCaches } from './operation';
 import { OperationCache, User, WEBSOCKET_EVENT } from './interfaces';
 import { Patch } from 'immer';
 
+/** Handles new socket connections, checks the token and the needed query parameters. */
 const socketConnection = async ({ strapi }, socket: Socket) => {
   try {
     strapi.log.info(`Socket Connecting: ${socket.id}`);
@@ -37,15 +38,22 @@ const socketConnection = async ({ strapi }, socket: Socket) => {
   }
 };
 
+/** Removes disconnected socket connections from the connection stack. */
 const socketDisconnect = async (operationCache: OperationCache, socket: Socket) => {
   operationCache.connections = _.filter(operationCache.connections, (c) => c.socket.id !== socket.id);
   strapi.log.info(`Socket Disconnected: ${socket.id}`);
 };
 
+/** Broadcast received patches to all currently connected sockets of an operation */
 const broadcastPatches = (operationCache: OperationCache, identifier: string, patches: Patch[]) => {
   const connections = _.filter(operationCache.connections, (c) => c.identifier !== identifier);
   for (const connection of connections) {
-    connection.socket.emit(WEBSOCKET_EVENT.STATE_PATCHES, patches);
+    try {
+      connection.socket.emit(WEBSOCKET_EVENT.STATE_PATCHES, patches);
+    } catch (error) {
+      connection.socket.disconnect();
+      strapi.log.error(error);
+    }
   }
 };
 
