@@ -17,11 +17,11 @@
       "required": true
     },
     "mapLongitude": {
-      "type": "decimal",
+      "type": "float",
       "default": 7.44297
     },
     "mapLatitude": {
-      "type": "decimal",
+      "type": "float",
       "default": 46.94635
     },
     "mapZoomLevel": {
@@ -59,11 +59,11 @@
       "default": "https://zskarte.ch/assets/img/zso/zso_guest.png"
     },
     "mapXCoord": {
-      "type": "decimal",
+      "type": "float",
       "default": 828547.63
     },
     "mapYCoord": {
-      "type": "decimal",
+      "type": "float",
       "default": 5933321.42
     }
   }
