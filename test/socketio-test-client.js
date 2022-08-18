@@ -1,20 +1,44 @@
 const process = require('process');
 const { io } = require('socket.io-client');
+const fs = require('fs');
+const axios = require('axios');
+let rawPatches = fs.readFileSync('patches.json');
+let patches = JSON.parse(rawPatches);
 
 const SERVER_URL = 'http://0.0.0.0:1337';
 const JWT_TOKEN =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjYwODA1NDU1LCJleHAiOjE2NjMzOTc0NTV9.F9L-zcSY8252FiNcthmQAWgvBbC-ZsSPOd1GwFCST-I';
+const IDENTIFIER = '12345';
 
 const socket = io(SERVER_URL, {
   auth: {
     token: JWT_TOKEN,
   },
   transports: ['websocket'],
-  query: "operationId=1&identifier=12345",
+  query: `operationId=1&identifier=${IDENTIFIER}`,
 });
 
 socket.on('connect', () => {
-  console.log('connected')
+  socket.on('patches', (patches) => {
+    console.log('Patches received', patches);
+  });
+  console.log('Connected');
+  const axiosConfig = {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${JWT_TOKEN}`,
+      identifier: IDENTIFIER,
+      operationId: 1,
+    },
+  };
+  axios
+    .post(`${SERVER_URL}/api/operations/state/patch`, patches, axiosConfig)
+    .then(function (response) {
+      console.log('Patches Sent');
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
 });
 
 process.stdin.resume();

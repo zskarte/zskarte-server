@@ -2,14 +2,16 @@ import { Socket } from 'socket.io/dist/socket';
 import _ from 'lodash';
 import { sessionCaches } from './session';
 import { SessionCache, User } from './interfaces';
+import { Patch } from 'immer';
 
 const socketConnection = async ({ strapi }, socket: Socket) => {
   try {
     strapi.log.info(`Socket Connecting: ${socket.id}`);
     const { token } = socket.handshake.auth;
     const operationId = socket.handshake.query.operationId as unknown as number;
-    if (!operationId || !token) {
-      strapi.log.warn(`Socket: ${socket.id} - Invalid operationId or token`);
+    const identifier = socket.handshake.query.identifier as string;
+    if (!operationId || !token || !identifier) {
+      strapi.log.warn(`Socket: ${socket.id} - Empty token, operationId or identifier in handshake`);
       socket.disconnect();
       return;
     }
@@ -26,7 +28,7 @@ const socketConnection = async ({ strapi }, socket: Socket) => {
       socket.disconnect();
       return;
     }
-    sessionCache.connections.push({ user, socket });
+    sessionCache.connections.push({ user, socket, identifier });
     strapi.log.info(`Socket Connected: ${socket.id}, ${user.email}`);
     socket.on('disconnect', () => socketDisconnect(sessionCache, socket));
   } catch (error) {
@@ -40,4 +42,11 @@ const socketDisconnect = async (sessionCache: SessionCache, socket: Socket) => {
   strapi.log.info(`Socket Disconnected: ${socket.id}`);
 };
 
-export { socketConnection };
+const broadcastPatches = async (sessionCache: SessionCache, identifier: string, patches: Patch[]) => {
+  const connections = _.filter(sessionCache.connections, (c) => c.identifier !== identifier);
+  for (const connection of connections) {
+    connection.socket.emit('patches', patches);
+  }
+};
+
+export { socketConnection, broadcastPatches };

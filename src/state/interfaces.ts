@@ -1,3 +1,4 @@
+import { Patch } from 'immer';
 import { Socket } from 'socket.io/dist/socket';
 
 export enum StrapiLifecycleHook {
@@ -40,12 +41,6 @@ export interface Organization extends StrapiObject {
   users: User[];
 }
 
-export interface Patch {
-  op: string;
-  path: string[];
-  value: object | object[];
-}
-
 export interface Operation extends StrapiObject {
   name: string;
   description: string;
@@ -58,10 +53,12 @@ export interface Operation extends StrapiObject {
 export interface Connection {
   user: User;
   socket: Socket;
+  identifier: string;
 }
 
 export interface SessionCache {
   operation: Operation;
   connections: Connection[];
   users: User[];
+  mapState: object;
 }
