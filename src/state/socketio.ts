@@ -42,7 +42,7 @@ const socketDisconnect = async (sessionCache: SessionCache, socket: Socket) => {
   strapi.log.info(`Socket Disconnected: ${socket.id}`);
 };
 
-const broadcastPatches = async (sessionCache: SessionCache, identifier: string, patches: Patch[]) => {
+const broadcastPatches = (sessionCache: SessionCache, identifier: string, patches: Patch[]) => {
   const connections = _.filter(sessionCache.connections, (c) => c.identifier !== identifier);
   for (const connection of connections) {
     connection.socket.emit('patches', patches);

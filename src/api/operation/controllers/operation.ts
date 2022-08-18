@@ -8,7 +8,7 @@ import { factories } from '@strapi/strapi';
 import { updateMapState } from '../../../state/operations';
 
 export default factories.createCoreController('api::operation.operation', ({ strapi }) => ({
-  async patch(ctx) {
+  patch(ctx) {
     const { identifier, operationid } = ctx.request.headers;
     if (!identifier || !operationid) {
       ctx.status = 400;
