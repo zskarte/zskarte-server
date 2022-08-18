@@ -13,16 +13,20 @@
   "pluginOptions": {},
   "attributes": {
     "name": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "mapLongitude": {
-      "type": "decimal"
+      "type": "decimal",
+      "default": 7.44297
     },
     "mapLatitude": {
-      "type": "decimal"
+      "type": "decimal",
+      "default": 46.94635
     },
     "mapZoomLevel": {
-      "type": "decimal"
+      "type": "decimal",
+      "default": 16
     },
     "defaultLocale": {
       "type": "enumeration",
@@ -56,6 +60,18 @@
       "relation": "oneToMany",
       "target": "plugin::users-permissions.user",
       "mappedBy": "organization"
+    },
+    "logoUrl": {
+      "type": "string",
+      "default": "https://zskarte.ch/assets/img/zso/zso_guest.png"
+    },
+    "mapXCoord": {
+      "type": "decimal",
+      "default": 828547.63
+    },
+    "mapYCoord": {
+      "type": "decimal",
+      "default": 5933321.42
     }
   }
 }
