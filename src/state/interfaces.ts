@@ -40,15 +40,26 @@ export interface Organization extends StrapiObject {
   users: User[];
 }
 
+export interface Patch extends StrapiObject {
+  data: object;
+}
+
 export interface Operation extends StrapiObject {
   name: string;
   description: string;
   status: string;
+  mapState: object;
   organization: Organization;
+  patches: Patch[];
+}
+
+export interface Connection {
+  user: User;
+  socket: Socket;
 }
 
 export interface SessionCache {
   operation: Operation;
-  connections: Socket[];
+  connections: Connection[];
   users: User[];
 }

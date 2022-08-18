@@ -1,4 +1,4 @@
-import events from '../src/state/socketio';
+import { socketConnection } from '../src/state/socketio';
 
 export default ({ env }) => ({
   io: {
@@ -10,7 +10,12 @@ export default ({ env }) => ({
           origins: '*:*',
         },
       },
-      events,
+      events: [
+        {
+          name: 'connection',
+          handler: socketConnection,
+        },
+      ],
     },
   },
 });
