@@ -9,6 +9,8 @@ const SERVER_URL = 'http://0.0.0.0:1337';
 // const SERVER_URL = 'https://api-dev.zskarte.ch';
 const JWT_TOKEN =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjYwODA1NDU1LCJleHAiOjE2NjMzOTc0NTV9.F9L-zcSY8252FiNcthmQAWgvBbC-ZsSPOd1GwFCST-I';
+// const JWT_TOKEN =
+//   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNjYwODE1ODYwLCJleHAiOjE2NjM0MDc4NjB9.9Oy0jJfdsE5T5NMILhVrM9__b0srNtXFFJ_oecHOwdU';
 const IDENTIFIER = (Math.random() + 1).toString(36).substring(2);
 
 const socket = io(SERVER_URL, {
@@ -33,7 +35,7 @@ socket.on('connect', () => {
     },
   };
   axios
-    .post(`${SERVER_URL}/api/operations/state/patch`, patches, axiosConfig)
+    .post(`${SERVER_URL}/api/operations/mapstate/patch`, patches, axiosConfig)
     .then(function (response) {
       console.log('Patches Sent', response.data);
     })

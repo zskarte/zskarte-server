@@ -2,7 +2,7 @@ export default {
   routes: [
     {
       method: 'POST',
-      path: '/operations/state/patch',
+      path: '/operations/mapstate/patch',
       handler: 'operation.patch',
     },
   ],
