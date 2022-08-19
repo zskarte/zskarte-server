@@ -74,13 +74,13 @@ const persistMapStates = async (strapi: Strapi) => {
   }
 };
 
-/** Archive operations who are active and */
+/** Archive operations who are active and are not updated since 7 days */
 const archiveOperations = async (strapi: Strapi) => {
   try {
-    const operations = (await strapi.db.query('api::operation.operation').findMany({
+    const activeOperations = (await strapi.db.query('api::operation.operation').findMany({
       where: { status: 'active' },
     })) as Operation[];
-    for (const operation of operations) {
+    for (const operation of activeOperations) {
       if (new Date(operation.updatedAt).getTime() + WEEK > new Date().getTime()) continue;
       await strapi.entityService.update('api::operation.operation', operation.id, {
         data: {

@@ -25,7 +25,8 @@
         "active",
         "archived"
       ],
-      "default": "active"
+      "default": "active",
+      "required": true
     },
     "organization": {
       "type": "relation",
