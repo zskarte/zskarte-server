@@ -1,4 +1,4 @@
-import { archiveOperations, persistMapStates } from '../src/state/operation';
+import cronTasks from './cron-tasks';
 
 export default ({ env }) => ({
   host: env('HOST', '0.0.0.0'),
@@ -8,13 +8,6 @@ export default ({ env }) => ({
   },
   cron: {
     enabled: true,
-    tasks: {
-      // Every hour
-      '0 * * * *': async ({ strapi }) => await archiveOperations(strapi),
-      // Every five seconds
-      '*/5 * * * * *': async ({ strapi }) => {
-        await persistMapStates(strapi);
-      },
-    },
+    tasks: cronTasks,
   },
 });
