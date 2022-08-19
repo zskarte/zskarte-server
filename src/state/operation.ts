@@ -93,4 +93,13 @@ const archiveOperations = async (strapi: Strapi) => {
   }
 };
 
-export { operationCaches, loadOperations, lifecycleOperation, updateMapState, persistMapStates, archiveOperations };
+const printOperationCache = (operationCache: OperationCache) => {
+  strapi.log.info('OperationCache:');
+  strapi.log.info(`  operation: ${operationCache.operation.id}`);
+  strapi.log.info(`  connections: ${operationCache.connections.length}`);
+  strapi.log.info(`  users: ${operationCache.users.length}`);
+  strapi.log.info(`  mapState: ${JSON.stringify(operationCache.mapState)}`);
+  strapi.log.info(`  mapStateChanged: ${operationCache.mapStateChanged}`);
+};
+
+export { operationCaches, loadOperations, lifecycleOperation, updateMapState, persistMapStates, archiveOperations, printOperationCache };

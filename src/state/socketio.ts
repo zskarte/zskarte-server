@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io/dist/socket';
 import _ from 'lodash';
-import { operationCaches } from './operation';
+import { operationCaches, printOperationCache } from './operation';
 import { OperationCache, User, WEBSOCKET_EVENT } from './interfaces';
 import { Patch } from 'immer';
 
@@ -26,6 +26,7 @@ const socketConnection = async ({ strapi }, socket: Socket) => {
     }
     if (!_.find(operationCache.users, (u) => u.id === user.id)) {
       strapi.log.warn(`Socket: ${socket.id} - User: ${user.email} not allowed for operationId: ${operationId}`);
+      printOperationCache(operationCache);
       socket.disconnect();
       return;
     }
