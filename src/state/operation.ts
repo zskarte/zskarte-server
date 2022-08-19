@@ -30,6 +30,8 @@ const loadOperations = async (strapi: Strapi) => {
 
 /** The implementation of the Strapi Lifecylce hooks of the operation collection type */
 const lifecycleOperation = async (lifecycleHook: StrapiLifecycleHook, operation: Operation) => {
+  console.log('lifecycleHook', lifecycleHook, operation);
+  console.log('operation', operation);
   if (lifecycleHook === StrapiLifecycleHook.AFTER_CREATE) {
     const mapState = operation.mapState || {};
     operationCaches[operation.id] = { operation, connections: [], users: [], mapState, mapStateChanged: false };
@@ -37,8 +39,6 @@ const lifecycleOperation = async (lifecycleHook: StrapiLifecycleHook, operation:
     const allowedUsers = (await strapi.entityService.findMany('plugin::users-permissions.user', {
       where: { organization: operation.organization.id },
     })) as User[];
-    strapi.log.info(operation)
-    strapi.log.info(allowedUsers)
     operationCaches[operation.id].users.push(...allowedUsers);
   }
   if (lifecycleHook === StrapiLifecycleHook.AFTER_UPDATE) {
