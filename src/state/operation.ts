@@ -14,7 +14,7 @@ const operationCaches: { [key: number]: OperationCache } = {};
 /** Loads all active operations initially and generates the in-memory cache */
 const loadOperations = async (strapi: Strapi) => {
   try {
-    const activeOperations = (await strapi.db.query('api::operation.operation').findMany({
+    const activeOperations = (await strapi.entityService.findMany('api::operation.operation', {
       where: { status: 'active' },
       populate: ['organization'],
     })) as Operation[];
@@ -34,7 +34,7 @@ const lifecycleOperation = async (lifecycleHook: StrapiLifecycleHook, operation:
     const mapState = operation.mapState || {};
     operationCaches[operation.id] = { operation, connections: [], users: [], mapState, mapStateChanged: false };
     if (!operation.organization) return;
-    const allowedUsers = (await strapi.db.query('plugin::users-permissions.user').findMany({
+    const allowedUsers = (await strapi.entityService.findMany('plugin::users-permissions.user', {
       where: { organization: operation.organization.id },
     })) as User[];
     operationCaches[operation.id].users.push(...allowedUsers);
@@ -77,7 +77,7 @@ const persistMapStates = async (strapi: Strapi) => {
 /** Archive operations who are active and are not updated since 7 days */
 const archiveOperations = async (strapi: Strapi) => {
   try {
-    const activeOperations = (await strapi.db.query('api::operation.operation').findMany({
+    const activeOperations = (await strapi.entityService.findMany('api::operation.operation', {
       where: { status: 'active' },
     })) as Operation[];
     for (const operation of activeOperations) {
