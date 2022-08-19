@@ -10,3 +10,6 @@ Dockerfile
 build
 data
 docker-compose.yml
+test
+dist
+public/uploads/*

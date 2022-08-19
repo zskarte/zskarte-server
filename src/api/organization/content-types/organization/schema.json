@@ -1,0 +1,77 @@
+{
+  "kind": "collectionType",
+  "collectionName": "organizations",
+  "info": {
+    "singularName": "organization",
+    "pluralName": "organizations",
+    "displayName": "Organization",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "mapLongitude": {
+      "type": "float",
+      "default": 7.44297
+    },
+    "mapLatitude": {
+      "type": "float",
+      "default": 46.94635
+    },
+    "mapZoomLevel": {
+      "type": "decimal",
+      "default": 16
+    },
+    "defaultLocale": {
+      "type": "enumeration",
+      "enum": [
+        "de-CH",
+        "fr-CH",
+        "it-CH",
+        "en-US"
+      ],
+      "default": "de-CH"
+    },
+    "url": {
+      "type": "string"
+    },
+    "logo": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "operations": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::operation.operation",
+      "mappedBy": "organization"
+    },
+    "users": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "plugin::users-permissions.user",
+      "mappedBy": "organization"
+    },
+    "logoUrl": {
+      "type": "string",
+      "default": "https://zskarte.ch/assets/img/zso/zso_guest.png"
+    },
+    "mapXCoord": {
+      "type": "float",
+      "default": 828547.63
+    },
+    "mapYCoord": {
+      "type": "float",
+      "default": 5933321.42
+    }
+  }
+}
