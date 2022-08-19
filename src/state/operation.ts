@@ -30,8 +30,9 @@ const loadOperations = async (strapi: Strapi) => {
 
 /** The implementation of the Strapi Lifecylce hooks of the operation collection type */
 const lifecycleOperation = async (lifecycleHook: StrapiLifecycleHook, operation: Operation) => {
-  console.log('lifecycleHook', lifecycleHook, operation);
-  console.log('operation', operation);
+  operation = (await strapi.entityService.findOne('api::operation.operation', operation.id, {
+    populate: ['organization'],
+  })) as Operation;
   if (lifecycleHook === StrapiLifecycleHook.AFTER_CREATE) {
     const mapState = operation.mapState || {};
     operationCaches[operation.id] = { operation, connections: [], users: [], mapState, mapStateChanged: false };
