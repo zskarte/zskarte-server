@@ -31,9 +31,6 @@
     "eslint": "^8.31.0",
     "prettier": "^2.8.2"
   },
-  "strapi": {
-    "uuid": "bcb31078-0352-4434-9fd2-7c4c0f1e1d5b"
-  },
   "engines": {
     "node": ">=12.x.x <=18.x.x",
     "npm": ">=6.0.0"

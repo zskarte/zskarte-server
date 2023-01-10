@@ -14,13 +14,13 @@ export default [
       },
     },
   },
-  // {
-  //   name: 'strapi::cors',
-  //   config: {
-  //     headers: ['Content-Type', 'Authorization', 'Origin', 'Accept', 'Identifier', 'OperationId'],
-  //     origin: '*',
-  //   },
-  // },
+  {
+    name: 'strapi::cors',
+    config: {
+      methods: ['*'],
+      headers: ['*'],
+    },
+  },
   'strapi::poweredBy',
   'strapi::logger',
   'strapi::query',
