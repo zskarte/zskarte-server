@@ -6,7 +6,7 @@ WORKDIR /app
 # yarn install
 ADD ./package.json /app/package.json
 ADD ./yarn.lock /app/yarn.lock
-RUN yarn install --frozen-lockfile --ignore-engines
+RUN yarn install --frozen-lockfile
 
 # Copy all files
 ADD . /app
