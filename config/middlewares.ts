@@ -17,7 +17,6 @@ export default [
   {
     name: 'strapi::cors',
     config: {
-      origin: ['https://dev.zskarte.ch', 'http://localhost:1337'],
       headers: ['Content-Type', 'Authorization', 'Origin', 'Accept', 'Identifier', 'OperationId'],
     },
   },
