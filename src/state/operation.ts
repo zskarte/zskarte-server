@@ -52,7 +52,8 @@ const lifecycleOperation = async (lifecycleHook: StrapiLifecycleHook, operation:
 const updateMapState = async (operationId: string, identifier: string, patches: PatchWithTimestamp[]) => {
   const operationCache: OperationCache = operationCaches[operationId];
   if (!operationCache) return;
-  operationCache.mapState = applyPatches(operationCache.mapState, patches);
+  const orderedPatches = _.orderBy(patches, ['timestamp'], ['asc']);
+  operationCache.mapState = applyPatches(operationCache.mapState, orderedPatches);
   operationCache.mapStateChanged = true;
   broadcastPatches(operationCache, identifier, patches);
 };
