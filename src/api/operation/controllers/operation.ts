@@ -7,7 +7,7 @@
 import { factories } from '@strapi/strapi';
 import { Patch } from 'immer';
 import _ from 'lodash';
-import { PatchWithTimestamp } from '../../../state/interfaces';
+import { PatchExtended } from '../../../state/interfaces';
 import { updateMapState } from '../../../state/operation';
 
 export default factories.createCoreController('api::operation.operation', ({ strapi }) => ({
@@ -18,7 +18,7 @@ export default factories.createCoreController('api::operation.operation', ({ str
       ctx.body = `Missing headers: identifier or operationId`;
       return;
     }
-    const patches: PatchWithTimestamp[] = ctx.request.body;
+    const patches: PatchExtended[] = ctx.request.body;
     if (!validatePatchesPayload(patches)) {
       ctx.status = 400;
       ctx.body = `Body is in a wrong format. Expected is an array of immer patches with the following structure: [{op: '', path: [''], value: {} }, ...]`;

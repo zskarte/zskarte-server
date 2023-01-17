@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io/dist/socket';
 import _ from 'lodash';
 import { operationCaches } from './operation';
-import { OperationCache, PatchWithTimestamp, User, WEBSOCKET_EVENT } from './interfaces';
+import { OperationCache, PatchExtended, User, WEBSOCKET_EVENT } from './interfaces';
 
 /** Handles new socket connections, checks the token and the needed query parameters. */
 const socketConnection = async ({ strapi }, socket: Socket) => {
@@ -48,7 +48,7 @@ const socketDisconnect = async (operationCache: OperationCache, socket: Socket) 
 };
 
 /** Broadcast received patches to all currently connected sockets of an operation */
-const broadcastPatches = (operationCache: OperationCache, identifier: string, patches: PatchWithTimestamp[]) => {
+const broadcastPatches = (operationCache: OperationCache, identifier: string, patches: PatchExtended[]) => {
   const connections = _.filter(operationCache.connections, (c) => c.identifier !== identifier);
   for (const connection of connections) {
     try {

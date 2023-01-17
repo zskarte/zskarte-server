@@ -1,8 +1,9 @@
-import { applyPatches, Patch, enablePatches } from 'immer';
+import { applyPatches, enablePatches, produce } from 'immer';
 import { Strapi } from '@strapi/strapi';
 import _ from 'lodash';
+import crypto from 'crypto';
 
-import { Operation, OperationCache, PatchWithTimestamp, StrapiLifecycleHook, User } from './interfaces';
+import { Operation, OperationCache, PatchExtended, StrapiLifecycleHook, User } from './interfaces';
 import { broadcastPatches } from './socketio';
 
 const WEEK = 1000 * 60 * 60 * 24 * 7;
@@ -49,11 +50,22 @@ const lifecycleOperation = async (lifecycleHook: StrapiLifecycleHook, operation:
 };
 
 /** Uses the immer library to patch the server map state */
-const updateMapState = async (operationId: string, identifier: string, patches: PatchWithTimestamp[]) => {
+const updateMapState = async (operationId: string, identifier: string, patches: PatchExtended[]) => {
   const operationCache: OperationCache = operationCaches[operationId];
   if (!operationCache) return;
   const orderedPatches = _.orderBy(patches, ['timestamp'], ['asc']);
-  operationCache.mapState = applyPatches(operationCache.mapState, orderedPatches);
+  const oldMapState = operationCache.mapState;
+  operationCache.mapState = applyPatches(oldMapState, orderedPatches);
+
+  const jsonOldMapState = JSON.stringify(oldMapState);
+  const jsonNewMapState = JSON.stringify(operationCache.mapState);
+  const hashOldMapState = crypto.createHash('sha256').update(jsonOldMapState).digest('hex');
+  const hashNewMapState = crypto.createHash('sha256').update(jsonNewMapState).digest('hex');
+  const stateChanged = hashOldMapState !== hashNewMapState;
+
+  console.log('stateChanged', stateChanged);
+  if (!stateChanged) return;
+
   operationCache.mapStateChanged = true;
   broadcastPatches(operationCache, identifier, patches);
 };
