@@ -32,8 +32,7 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::organization.organization",
-      "inversedBy": "operations",
-      "required": true
+      "inversedBy": "operations"
     },
     "mapState": {
       "type": "json"
