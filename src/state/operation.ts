@@ -62,8 +62,7 @@ const updateMapState = async (operationId: string, identifier: string, patches: 
   const hashOldMapState = crypto.createHash('sha256').update(jsonOldMapState).digest('hex');
   const hashNewMapState = crypto.createHash('sha256').update(jsonNewMapState).digest('hex');
   const stateChanged = hashOldMapState !== hashNewMapState;
-
-  console.log('stateChanged', stateChanged);
+  
   if (!stateChanged) return;
 
   operationCache.mapStateChanged = true;
