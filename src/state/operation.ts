@@ -1,8 +1,9 @@
-import { applyPatches, Patch, enablePatches } from 'immer';
+import { applyPatches, enablePatches, produce } from 'immer';
 import { Strapi } from '@strapi/strapi';
 import _ from 'lodash';
+import crypto from 'crypto';
 
-import { Operation, OperationCache, StrapiLifecycleHook, User } from './interfaces';
+import { Operation, OperationCache, PatchExtended, StrapiLifecycleHook, User } from './interfaces';
 import { broadcastPatches } from './socketio';
 
 const WEEK = 1000 * 60 * 60 * 24 * 7;
@@ -14,10 +15,10 @@ const operationCaches: { [key: number]: OperationCache } = {};
 /** Loads all active operations initially and generates the in-memory cache */
 const loadOperations = async (strapi: Strapi) => {
   try {
-    const activeOperations = (await strapi.entityService.findMany('api::operation.operation', {
+    const activeOperations: Operation[] = await strapi.entityService.findMany('api::operation.operation', {
       where: { status: 'active' },
       populate: ['organization'],
-    })) as Operation[];
+    });
     for (const operation of activeOperations) {
       await lifecycleOperation(StrapiLifecycleHook.AFTER_CREATE, operation);
     }
@@ -31,9 +32,9 @@ const loadOperations = async (strapi: Strapi) => {
 /** The implementation of the Strapi Lifecylce hooks of the operation collection type */
 const lifecycleOperation = async (lifecycleHook: StrapiLifecycleHook, operation: Operation) => {
   operation =
-    ((await strapi.entityService.findOne('api::operation.operation', operation.id, {
+    (await strapi.entityService.findOne('api::operation.operation', operation.id, {
       populate: ['organization.users'],
-    })) as Operation) || operation;
+    })) || operation;
   if (lifecycleHook === StrapiLifecycleHook.AFTER_CREATE) {
     const mapState = operation.mapState || {};
     operationCaches[operation.id] = { operation, connections: [], users: [], mapState, mapStateChanged: false };
@@ -49,10 +50,21 @@ const lifecycleOperation = async (lifecycleHook: StrapiLifecycleHook, operation:
 };
 
 /** Uses the immer library to patch the server map state */
-const updateMapState = async (operationId: string, identifier: string, patches: Patch[]) => {
-  const operationCache = operationCaches[operationId] as OperationCache;
+const updateMapState = async (operationId: string, identifier: string, patches: PatchExtended[]) => {
+  const operationCache: OperationCache = operationCaches[operationId];
   if (!operationCache) return;
-  operationCache.mapState = applyPatches(operationCache.mapState, patches);
+  const orderedPatches = _.orderBy(patches, ['timestamp'], ['asc']);
+  const oldMapState = operationCache.mapState;
+  operationCache.mapState = applyPatches(oldMapState, orderedPatches);
+
+  const jsonOldMapState = JSON.stringify(oldMapState);
+  const jsonNewMapState = JSON.stringify(operationCache.mapState);
+  const hashOldMapState = crypto.createHash('sha256').update(jsonOldMapState).digest('hex');
+  const hashNewMapState = crypto.createHash('sha256').update(jsonNewMapState).digest('hex');
+  const stateChanged = hashOldMapState !== hashNewMapState;
+  
+  if (!stateChanged) return;
+
   operationCache.mapStateChanged = true;
   broadcastPatches(operationCache, identifier, patches);
 };
@@ -78,9 +90,9 @@ const persistMapStates = async (strapi: Strapi) => {
 /** Archive operations who are active and are not updated since 7 days */
 const archiveOperations = async (strapi: Strapi) => {
   try {
-    const activeOperations = (await strapi.entityService.findMany('api::operation.operation', {
+    const activeOperations: Operation[] = await strapi.entityService.findMany('api::operation.operation', {
       where: { status: 'active' },
-    })) as Operation[];
+    });
     for (const operation of activeOperations) {
       if (new Date(operation.updatedAt).getTime() + WEEK > new Date().getTime()) continue;
       await strapi.entityService.update('api::operation.operation', operation.id, {

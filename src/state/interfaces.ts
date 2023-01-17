@@ -67,3 +67,8 @@ export interface OperationCache {
   mapState: object;
   mapStateChanged: boolean;
 }
+
+export interface PatchExtended extends Patch {
+  timestamp: Date;
+  identifier: string;
+}
