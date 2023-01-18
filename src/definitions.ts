@@ -11,6 +11,11 @@ export enum WEBSOCKET_EVENT {
   STATE_PATCHES = 'state:patches',
 }
 
+export enum OperationState {
+  ACTIVE = 'active',
+  ARCHIVED = 'archived',
+}
+
 export interface StrapiObject {
   id: number;
   createdAt: Date;

@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io/dist/socket';
 import _ from 'lodash';
 import { operationCaches } from './operation';
-import { OperationCache, PatchExtended, User, WEBSOCKET_EVENT } from './interfaces';
+import { OperationCache, PatchExtended, User, WEBSOCKET_EVENT } from '../definitions';
 
 /** Handles new socket connections, checks the token and the needed query parameters. */
 const socketConnection = async ({ strapi }, socket: Socket) => {

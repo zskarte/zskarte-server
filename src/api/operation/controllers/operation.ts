@@ -7,7 +7,7 @@
 import { factories } from '@strapi/strapi';
 import { Patch } from 'immer';
 import _ from 'lodash';
-import { PatchExtended } from '../../../state/interfaces';
+import { PatchExtended } from '../../../definitions';
 import { updateMapState } from '../../../state/operation';
 
 export default factories.createCoreController('api::operation.operation', ({ strapi }) => ({
