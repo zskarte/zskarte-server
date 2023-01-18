@@ -33,7 +33,7 @@ const socketConnection = async ({ strapi }, socket: Socket) => {
       return;
     }
     operationCache.connections.push({ user, socket, identifier });
-    strapi.log.info(`Socket Connected: ${socket.id}, ${user.email}`);
+    strapi.log.info(`Socket Connected: ${socket.id}, ${user.email}, OperationId: ${operationId}`);
     socket.on('disconnect', () => socketDisconnect(operationCache, socket));
   } catch (error) {
     socket.disconnect();

@@ -33,6 +33,6 @@ export default factories.createCoreController('api::operation.operation', ({ str
 const validatePatchesPayload = (patches: Patch[]) => {
   if (!_.isArray(patches)) return false;
   return patches.every((patch) => {
-    return patch.op && patch.path && patch.value;
+    return 'op' in patch && 'path' in patch && 'value' in patch;
   });
 };
