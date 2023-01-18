@@ -62,7 +62,7 @@ const updateMapState = async (operationId: string, identifier: string, patches: 
   const hashOldMapState = crypto.createHash('sha256').update(jsonOldMapState).digest('hex');
   const hashNewMapState = crypto.createHash('sha256').update(jsonNewMapState).digest('hex');
   const stateChanged = hashOldMapState !== hashNewMapState;
-  
+
   if (!stateChanged) return;
 
   operationCache.mapStateChanged = true;
@@ -106,4 +106,24 @@ const archiveOperations = async (strapi: Strapi) => {
   }
 };
 
-export { operationCaches, loadOperations, lifecycleOperation, updateMapState, persistMapStates, archiveOperations };
+const deleteGuestOperations = async (strapi: Strapi) => {
+  try {
+    const guestUser: User = _.first(
+      await strapi.entityService.findMany('plugin::users-permissions.user', {
+        fields: ['id', 'username', 'email'],
+        filters: { username: 'zso_guest' },
+        populate: ['organization.operations'],
+      })
+    );
+    if (!guestUser?.organization?.operations) return;
+    const { operations } = guestUser.organization;
+    for (const operation of operations) {
+      strapi.log.info(`Deleting operation ${operation.name} of guest user`);
+      await strapi.entityService.delete('api::operation.operation', operation.id);
+    }
+  } catch (error) {
+    strapi.log.error(error);
+  }
+};
+
+export { operationCaches, loadOperations, lifecycleOperation, updateMapState, persistMapStates, archiveOperations, deleteGuestOperations };
