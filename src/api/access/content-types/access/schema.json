@@ -15,7 +15,8 @@
     "accessToken": {
       "type": "string",
       "required": true,
-      "private": true
+      "private": true,
+      "unique": true
     },
     "operation": {
       "type": "relation",
