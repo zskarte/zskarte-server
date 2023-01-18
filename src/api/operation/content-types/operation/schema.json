@@ -21,10 +21,7 @@
     },
     "status": {
       "type": "enumeration",
-      "enum": [
-        "active",
-        "archived"
-      ],
+      "enum": ["active", "archived"],
       "default": "active",
       "required": true
     },

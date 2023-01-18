@@ -3,7 +3,7 @@ import { Strapi } from '@strapi/strapi';
 import _ from 'lodash';
 import crypto from 'crypto';
 
-import { Operation, OperationCache, PatchExtended, StrapiLifecycleHook, User } from './interfaces';
+import { Operation, OperationCache, OperationState, PatchExtended, StrapiLifecycleHook, User } from '../definitions';
 import { broadcastPatches } from './socketio';
 
 const WEEK = 1000 * 60 * 60 * 24 * 7;
@@ -16,8 +16,9 @@ const operationCaches: { [key: number]: OperationCache } = {};
 const loadOperations = async (strapi: Strapi) => {
   try {
     const activeOperations: Operation[] = await strapi.entityService.findMany('api::operation.operation', {
-      where: { status: 'active' },
+      where: { status: OperationState.ACTIVE },
       populate: ['organization'],
+      limit: -1,
     });
     for (const operation of activeOperations) {
       await lifecycleOperation(StrapiLifecycleHook.AFTER_CREATE, operation);
@@ -42,6 +43,10 @@ const lifecycleOperation = async (lifecycleHook: StrapiLifecycleHook, operation:
     operationCaches[operation.id].users.push(...operation.organization.users);
   }
   if (lifecycleHook === StrapiLifecycleHook.AFTER_UPDATE) {
+    if (operation.status === OperationState.ARCHIVED) {
+      delete operationCaches[operation.id];
+      return;
+    }
     operationCaches[operation.id].operation = operation;
   }
   if (lifecycleHook === StrapiLifecycleHook.AFTER_DELETE) {
@@ -91,13 +96,14 @@ const persistMapStates = async (strapi: Strapi) => {
 const archiveOperations = async (strapi: Strapi) => {
   try {
     const activeOperations: Operation[] = await strapi.entityService.findMany('api::operation.operation', {
-      where: { status: 'active' },
+      where: { status: OperationState.ACTIVE },
+      limit: -1,
     });
     for (const operation of activeOperations) {
       if (new Date(operation.updatedAt).getTime() + WEEK > new Date().getTime()) continue;
       await strapi.entityService.update('api::operation.operation', operation.id, {
         data: {
-          status: 'archived',
+          status: OperationState.ARCHIVED,
         },
       });
     }
@@ -113,6 +119,7 @@ const deleteGuestOperations = async (strapi: Strapi) => {
         fields: ['id', 'username', 'email'],
         filters: { username: 'zso_guest' },
         populate: ['organization.operations'],
+        limit: 1,
       })
     );
     if (!guestUser?.organization?.operations) return;

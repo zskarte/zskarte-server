@@ -1,29 +1,40 @@
 import { Socket } from 'socket.io/dist/socket';
 import _ from 'lodash';
 import { operationCaches } from './operation';
-import { OperationCache, PatchExtended, User, WEBSOCKET_EVENT } from './interfaces';
+import { OperationCache, PatchExtended, User, WEBSOCKET_EVENT } from '../definitions';
 
 /** Handles new socket connections, checks the token and the needed query parameters. */
 const socketConnection = async ({ strapi }, socket: Socket) => {
   try {
     strapi.log.info(`Socket Connecting: ${socket.id}`);
     const { token } = socket.handshake.auth;
-    const operationId = socket.handshake.query.operationId as unknown as number;
+    const operationId = parseInt(socket.handshake.query.operationId as string);
     const identifier = socket.handshake.query.identifier as string;
-    if (!operationId || !token || !identifier) {
+    if (isNaN(operationId) || !token || !identifier) {
       strapi.log.warn(`Socket: ${socket.id} - Empty token, operationId or identifier in handshake`);
       socket.disconnect();
       return;
     }
-    const { id: userId } = await strapi.plugins['users-permissions'].services.jwt.verify(token);
-    const user = (await strapi.plugins['users-permissions'].services.user.fetch(userId)) as User;
+    const { jwt, user: userService } = strapi.plugins['users-permissions'].services;
+    const { id: userId, operationId: tokenOperationId }: { id: number; operationId: number } = await jwt.verify(token);
+    // Check if the token operationId matches the query operationId
+    if (tokenOperationId && operationId !== tokenOperationId) {
+      strapi.log.warn(
+        `Socket: ${socket.id} - OperationId: ${operationId} does not match provided access token OperationId: ${tokenOperationId}`
+      );
+      socket.disconnect();
+      return;
+    }
+    const user = (await userService.fetch(userId)) as User;
     const operationCache = operationCaches[operationId];
+    // Check if the operationCache exists
     if (!operationCache) {
       strapi.log.warn(`Socket: ${socket.id} - No operationCache for operationId: ${operationId}`);
       socket.disconnect();
       return;
     }
-    if (!_.find(operationCache.users, (u) => u.id === user.id)) {
+    // Check if the user is allowed to connect to the operation or if it is a token connection then pass the check
+    if (!tokenOperationId && !_.find(operationCache.users, (u) => u.id === user.id)) {
       strapi.log.warn(`Socket: ${socket.id} - User: ${user.email} not allowed for operationId: ${operationId}`);
       strapi.log.info(`Allowed users for operationId: ${operationId}`);
       for (const user of operationCache.users) {
@@ -33,7 +44,7 @@ const socketConnection = async ({ strapi }, socket: Socket) => {
       return;
     }
     operationCache.connections.push({ user, socket, identifier });
-    strapi.log.info(`Socket Connected: ${socket.id}, ${user.email}`);
+    strapi.log.info(`Socket Connected: ${socket.id}, ${user.email}, OperationId: ${operationId}`);
     socket.on('disconnect', () => socketDisconnect(operationCache, socket));
   } catch (error) {
     socket.disconnect();

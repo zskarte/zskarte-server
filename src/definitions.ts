@@ -11,10 +11,29 @@ export enum WEBSOCKET_EVENT {
   STATE_PATCHES = 'state:patches',
 }
 
+export enum OperationState {
+  ACTIVE = 'active',
+  ARCHIVED = 'archived',
+}
+
+export enum AccessType {
+  READ = 'read',
+  WRITE = 'write',
+  ALL = 'all',
+}
+
 export interface StrapiObject {
   id: number;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface Access extends StrapiObject {
+  name?: string;
+  accessToken: string;
+  operation: Operation;
+  type: AccessType;
+  active: boolean;
 }
 
 export interface Role extends StrapiObject {

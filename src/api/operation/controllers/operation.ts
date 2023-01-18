@@ -7,7 +7,7 @@
 import { factories } from '@strapi/strapi';
 import { Patch } from 'immer';
 import _ from 'lodash';
-import { PatchExtended } from '../../../state/interfaces';
+import { PatchExtended } from '../../../definitions';
 import { updateMapState } from '../../../state/operation';
 
 export default factories.createCoreController('api::operation.operation', ({ strapi }) => ({
@@ -33,6 +33,6 @@ export default factories.createCoreController('api::operation.operation', ({ str
 const validatePatchesPayload = (patches: Patch[]) => {
   if (!_.isArray(patches)) return false;
   return patches.every((patch) => {
-    return patch.op && patch.path && patch.value;
+    return 'op' in patch && 'path' in patch && 'value' in patch;
   });
 };
