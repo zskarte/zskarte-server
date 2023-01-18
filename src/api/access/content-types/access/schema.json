@@ -24,9 +24,21 @@
     },
     "type": {
       "type": "enumeration",
-      "enum": ["read", "write", "all"],
+      "enum": [
+        "read",
+        "write",
+        "all"
+      ],
       "required": true,
       "default": "read"
+    },
+    "name": {
+      "type": "string"
+    },
+    "active": {
+      "type": "boolean",
+      "required": true,
+      "default": true
     }
   }
 }

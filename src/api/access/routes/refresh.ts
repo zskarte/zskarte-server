@@ -2,7 +2,7 @@ export default {
   routes: [
     {
       method: 'GET',
-      path: '/accesses/auth/local/refresh',
+      path: '/accesses/auth/refresh',
       handler: 'access.refresh',
     },
   ],
