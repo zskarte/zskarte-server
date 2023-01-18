@@ -18,6 +18,7 @@ const loadOperations = async (strapi: Strapi) => {
     const activeOperations: Operation[] = await strapi.entityService.findMany('api::operation.operation', {
       where: { status: OperationState.ACTIVE },
       populate: ['organization'],
+      limit: -1,
     });
     for (const operation of activeOperations) {
       await lifecycleOperation(StrapiLifecycleHook.AFTER_CREATE, operation);
@@ -96,6 +97,7 @@ const archiveOperations = async (strapi: Strapi) => {
   try {
     const activeOperations: Operation[] = await strapi.entityService.findMany('api::operation.operation', {
       where: { status: OperationState.ACTIVE },
+      limit: -1,
     });
     for (const operation of activeOperations) {
       if (new Date(operation.updatedAt).getTime() + WEEK > new Date().getTime()) continue;
@@ -117,6 +119,7 @@ const deleteGuestOperations = async (strapi: Strapi) => {
         fields: ['id', 'username', 'email'],
         filters: { username: 'zso_guest' },
         populate: ['organization.operations'],
+        limit: 1,
       })
     );
     if (!guestUser?.organization?.operations) return;

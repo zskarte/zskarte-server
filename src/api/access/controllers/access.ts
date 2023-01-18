@@ -7,6 +7,7 @@ import utils from '@strapi/utils';
 import _ from 'lodash';
 import { Access, AccessType, Operation, User } from '../../../definitions';
 import crypto from 'crypto';
+import { Strapi } from '@strapi/strapi';
 const { sanitize } = utils;
 
 const sanitizeUser = (user, ctx) => {
@@ -16,7 +17,7 @@ const sanitizeUser = (user, ctx) => {
   return sanitize.contentAPI.output(user, userSchema, { auth });
 };
 
-export default factories.createCoreController('api::access.access', {
+export default factories.createCoreController('api::access.access', ({ strapi }: { strapi: Strapi }) => ({
   async refresh(ctx) {
     const { user } = ctx.state;
     const { id } = user;
@@ -38,12 +39,13 @@ export default factories.createCoreController('api::access.access', {
 
     const access: Access = _.first(
       await strapi.entityService.findMany('api::access.access', {
-        filters: { active: true },
+        filters: { active: true, accessToken },
         populate: {
           operation: {
             fields: ['id'],
           },
         },
+        limit: 1,
       })
     );
 
@@ -54,6 +56,7 @@ export default factories.createCoreController('api::access.access', {
     const accessUser: User = _.first(
       await strapi.entityService.findMany('plugin::users-permissions.user', {
         filters: { username: `operation_${access.type}` },
+        limit: 1,
       })
     );
 
@@ -86,6 +89,7 @@ export default factories.createCoreController('api::access.access', {
             },
           },
         },
+        limit: 1,
       })
     );
     if (!operation)
@@ -99,4 +103,4 @@ export default factories.createCoreController('api::access.access', {
 
     ctx.send({ accessToken });
   },
-});
+}));
