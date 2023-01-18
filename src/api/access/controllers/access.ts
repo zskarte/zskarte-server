@@ -5,7 +5,7 @@
 import { factories } from '@strapi/strapi';
 import utils from '@strapi/utils';
 import _ from 'lodash';
-import { Access, AccessType, User } from '../../../definitions';
+import { Access, AccessType, Operation, User } from '../../../definitions';
 import crypto from 'crypto';
 const { sanitize } = utils;
 
@@ -76,7 +76,7 @@ export default factories.createCoreController('api::access.access', {
       return ctx.badRequest('The "type" property has an invalid value. Allowed values are: [read, write, admin]');
 
     if (!operationId) return ctx.badRequest('You must define the "operationId" property');
-    const operation = _.first(
+    const operation: Operation = _.first(
       await strapi.entityService.findMany('api::operation.operation', {
         filters: {
           id: operationId,

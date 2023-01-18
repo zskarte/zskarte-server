@@ -29,7 +29,7 @@ export interface StrapiObject {
 }
 
 export interface Access extends StrapiObject {
-  name: string;
+  name?: string;
   accessToken: string;
   operation: Operation;
   type: AccessType;
