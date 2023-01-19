@@ -33,20 +33,8 @@ export default factories.createCoreController('api::operation.operation', ({ str
       return;
     }
     const patches: PatchExtended[] = ctx.request.body;
-    if (!validatePatchesPayload(patches)) {
-      ctx.status = 400;
-      ctx.body = `Body is in a wrong format. Expected is an array of immer patches with the following structure: [{op: '', path: [''], value: {} }, ...]`;
-      return;
-    }
     updateMapState(operationid, identifier, patches);
     ctx.status = 200;
     return {};
   },
 }));
-
-const validatePatchesPayload = (patches: Patch[]) => {
-  if (!_.isArray(patches)) return false;
-  return patches.every((patch) => {
-    return 'op' in patch && 'path' in patch && 'value' in patch;
-  });
-};

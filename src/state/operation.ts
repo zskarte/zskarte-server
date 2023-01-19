@@ -1,4 +1,4 @@
-import { applyPatches, enablePatches, produce } from 'immer';
+import { applyPatches, enablePatches, Patch, produce } from 'immer';
 import { Strapi } from '@strapi/strapi';
 import _ from 'lodash';
 import crypto from 'crypto';
@@ -54,14 +54,33 @@ const lifecycleOperation = async (lifecycleHook: StrapiLifecycleHook, operation:
   }
 };
 
+const isValidImmerPatch = (patch: Patch) => {
+  if (typeof patch !== 'object' || patch === null) return false;
+  if (!['replace', 'add', 'delete'].includes(patch.op)) return false;
+  if (!Array.isArray(patch.path)) return false;
+  if (patch.op === 'replace' || patch.op === 'add') {
+    if (patch.value === undefined) return false;
+  }
+  return true;
+};
+
+const validatePatches = (patches: PatchExtended[]) => {
+  if (!patches || !_.isArray(patches)) return [];
+  return _.orderBy(_.filter(patches, isValidImmerPatch), ['timestamp'], ['asc']);
+};
+
 /** Uses the immer library to patch the server map state */
 const updateMapState = async (operationId: string, identifier: string, patches: PatchExtended[]) => {
   const operationCache: OperationCache = operationCaches[operationId];
   if (!operationCache) return;
-  const orderedPatches = _.orderBy(patches, ['timestamp'], ['asc']);
+  const validatedPatches = validatePatches(patches);
+  if (!validatedPatches.length) return;
   const oldMapState = operationCache.mapState;
-  operationCache.mapState = applyPatches(oldMapState, orderedPatches);
-
+  try {
+    operationCache.mapState = applyPatches(oldMapState, validatedPatches);
+  } catch (error) {
+    strapi.log.error(error);
+  }
   const jsonOldMapState = JSON.stringify(oldMapState);
   const jsonNewMapState = JSON.stringify(operationCache.mapState);
   const hashOldMapState = crypto.createHash('sha256').update(jsonOldMapState).digest('hex');
