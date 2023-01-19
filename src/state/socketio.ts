@@ -38,7 +38,7 @@ const socketConnection = async ({ strapi }, socket: Socket) => {
       strapi.log.warn(`Socket: ${socket.id} - User: ${user.email} not allowed for operationId: ${operationId}`);
       strapi.log.info(`Allowed users for operationId: ${operationId}`);
       for (const user of operationCache.users) {
-        strapi.log.info(`   ${user.email}`);
+        strapi.log.info(`   ${user.username}`);
       }
       socket.disconnect();
       return;
