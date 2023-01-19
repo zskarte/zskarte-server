@@ -46,7 +46,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ IMAGE_TAG }}:${{ steps.previoustag.outputs.tag }}
+          tags: ${{ env.IMAGE_TAG }}:${{ steps.previoustag.outputs.tag }}
 
       - name: Set Kubernetes Context
         uses: azure/k8s-set-context@v1
@@ -70,4 +70,4 @@ jobs:
             .azure/k8s/ingress.yml
           replacement-method: defined
         env:
-          FULL_IMAGE_NAME: ${{ IMAGE_TAG }}:${{ steps.previoustag.outputs.tag }}
+          FULL_IMAGE_NAME: ${{ env.IMAGE_TAG }}:${{ steps.previoustag.outputs.tag }}
