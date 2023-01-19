@@ -30,7 +30,12 @@
     },
     "defaultLocale": {
       "type": "enumeration",
-      "enum": ["de-CH", "fr-CH", "it-CH", "en-US"],
+      "enum": [
+        "de-CH",
+        "fr-CH",
+        "it-CH",
+        "en-US"
+      ],
       "default": "de-CH"
     },
     "url": {
@@ -40,7 +45,9 @@
       "type": "media",
       "multiple": false,
       "required": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "operations": {
       "type": "relation",
@@ -53,14 +60,6 @@
       "relation": "oneToMany",
       "target": "plugin::users-permissions.user",
       "mappedBy": "organization"
-    },
-    "mapXCoord": {
-      "type": "float",
-      "default": 828547.63
-    },
-    "mapYCoord": {
-      "type": "float",
-      "default": 5933321.42
     }
   }
 }
