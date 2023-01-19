@@ -7,10 +7,24 @@
 import { factories } from '@strapi/strapi';
 import { Patch } from 'immer';
 import _ from 'lodash';
-import { PatchExtended } from '../../../definitions';
-import { updateMapState } from '../../../state/operation';
+import { Operation, PatchExtended } from '../../../definitions';
+import { operationCaches, updateMapState } from '../../../state/operation';
 
 export default factories.createCoreController('api::operation.operation', ({ strapi }) => ({
+  async findOne(ctx) {
+    const { id } = ctx.params;
+    const { query } = ctx;
+
+    const entity: Operation = await strapi.service('api::operation.operation').findOne(id, query);
+    const sanitizedEntity: Operation = await this.sanitizeOutput(entity, ctx);
+
+    const operationCache = operationCaches[entity.id];
+    if (operationCache) {
+      sanitizedEntity.mapState = operationCache.mapState;
+    }
+
+    return this.transformResponse(sanitizedEntity);
+  },
   patch(ctx) {
     const { identifier, operationid } = ctx.request.headers;
     if (!identifier || !operationid) {
