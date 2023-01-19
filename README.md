@@ -170,6 +170,7 @@ az aks get-credentials \
 ```
 
 ### Disable AKS SLA
+
 ```bash
 AKSResourceID=$(az aks show --subscription $SUBSCRIPTION --name $AKS_CLUSTER --resource-group $RESOURCE_GROUP --query id -o tsv)
 az resource update --ids $AKSResourceID --subscription $SUBSCRIPTION --set sku.tier="Free"
@@ -182,21 +183,15 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 ```
 
 ### Install NGINX Ingress
+
 ```bash
-helm upgrade --install nginx-ingress bitnami/nginx-ingress-controller --create-namespace -n nginx-ingress -f .azure/aks/nginx/values.yml
+helm upgrade --install nginx-ingress-controller bitnami/nginx-ingress-controller --create-namespace -n nginx-ingress-controller -f .azure/aks/nginx/values.yml
 ```
 
 ### Install Cert-Manager
+
 ```bash
 helm upgrade --install cert-manager bitnami/cert-manager --create-namespace -n cert-manager -f .azure/aks/cert-manager/values.yml
 kubectl apply -f .azure/aks/cert-manager/letsencrpyt-staging.yml
 kubectl apply -f .azure/aks/cert-manager/letsencrpyt-prod.yml
-```
-
-### Create postgresql as a service
-
-```bash
-# unsername: zskarte_admin
-# password: 4LLBdzLXC4oB7qAiNh77
-
 ```
