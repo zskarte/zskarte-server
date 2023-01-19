@@ -1,14 +1,14 @@
 on:
-  push:
-    branches:
-      - main
+  release:
+    types:
+      - published
 
 env:
   STAGE: prod
   DOCKERHUB_USERNAME: zskarte
   KUBERNETES_NAMESPACE: zskarte-prod
   APP_NAME: zskarte-server
-  FULL_IMAGE_NAME: zskarte/zskarte-server:${{ github.sha }}
+  IMAGE_TAG: zskarte/zskarte-server
   LETSENCRYPT_STAGE: prod
   DB_HOST: zskarte.postgres.database.azure.com
   DB_PORT: 5432
@@ -31,17 +31,23 @@ jobs:
     steps:
       - uses: actions/checkout@master
 
+      - name: Get Latest Tag
+        id: previoustag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+
       - uses: docker/login-action@v2
         name: Login to Docker Hub
         with:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and Push Docker Image to Docker Hub
-        id: build-image
-        run: |
-          docker build "$GITHUB_WORKSPACE/" -f  "Dockerfile" -t ${{ env.FULL_IMAGE_NAME }} --label dockerfile-path=Dockerfile
-          docker push ${{ env.FULL_IMAGE_NAME }}
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: ${{ IMAGE_TAG }}:${{ steps.previoustag.outputs.tag }}
+
       - name: Set Kubernetes Context
         uses: azure/k8s-set-context@v1
         with:
@@ -64,5 +70,4 @@ jobs:
             .azure/k8s/ingress.yml
           replacement-method: defined
         env:
-          IMAGE_TAG: ${{ github.sha }}
-          CHANGE_CAUSE: ${{ github.event.release.tag_name }}
+          FULL_IMAGE_NAME: ${{ IMAGE_TAG }}:${{ steps.previoustag.outputs.tag }}
