@@ -25,7 +25,7 @@ export default factories.createCoreController('api::operation.operation', ({ str
 
     return this.transformResponse(sanitizedEntity);
   },
-  patch(ctx) {
+  async patch(ctx) {
     const { identifier, operationid } = ctx.request.headers;
     if (!identifier || !operationid) {
       ctx.status = 400;
@@ -33,7 +33,7 @@ export default factories.createCoreController('api::operation.operation', ({ str
       return;
     }
     const patches: PatchExtended[] = ctx.request.body;
-    updateMapState(operationid, identifier, patches);
+    await updateMapState(operationid, identifier, patches);
     ctx.status = 200;
     return {};
   },
