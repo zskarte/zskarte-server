@@ -62,7 +62,7 @@ export default factories.createCoreController('api::access.access', ({ strapi }:
 
     if (!accessUser) return ctx.unauthorized(`Couldn't find the default access user for type ${access.type}`);
 
-    const token = jwt.issue({ id: accessUser.id, operationId: access.operation.id });
+    const token = jwt.issue({ id: accessUser.id, operationId: access.operation.id, permission: access.type });
 
     ctx.send({
       jwt: token,
