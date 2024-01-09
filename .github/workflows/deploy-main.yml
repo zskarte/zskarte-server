@@ -19,6 +19,7 @@ env:
   JWT_SECRET: ${{ secrets.STRAPI_JWT_SECRET_PROD }}
   APP_KEYS: ${{ secrets.STRAPI_APP_KEYS_PROD }}
   API_TOKEN_SALT: ${{ secrets.STRAPI_API_TOKEN_SALT_PROD }}
+  TRANSFER_TOKEN_SALT: ${{ secrets.STRAPI_TRANSFER_TOKEN_SALT_PROD }}
   BASE_URL: api.zskarte.ch
   STORAGE_ACCOUNT: zskarte
   STORAGE_ACCOUNT_KEY: ${{ secrets.STORAGE_ACCOUNT_KEY }}
@@ -33,7 +34,7 @@ jobs:
 
       - name: Get Latest Tag
         id: previoustag
-        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        uses: 'WyriHaximus/github-action-get-previous-tag@v1'
 
       - uses: docker/login-action@v2
         name: Login to Docker Hub

@@ -1,4 +1,4 @@
-import { applyPatches, enablePatches, Patch, produce } from 'immer';
+import { applyPatches, enablePatches, Patch } from 'immer';
 import { Strapi } from '@strapi/strapi';
 import _ from 'lodash';
 import crypto from 'crypto';
@@ -15,11 +15,11 @@ const operationCaches: { [key: number]: OperationCache } = {};
 /** Loads all active operations initially and generates the in-memory cache */
 const loadOperations = async (strapi: Strapi) => {
   try {
-    const activeOperations: Operation[] = await strapi.entityService.findMany('api::operation.operation', {
+    const activeOperations = (await strapi.entityService.findMany('api::operation.operation', {
       where: { status: OperationState.ACTIVE },
       populate: ['organization'],
       limit: -1,
-    });
+    })) as unknown as Operation[];
     for (const operation of activeOperations) {
       await lifecycleOperation(StrapiLifecycleHook.AFTER_CREATE, operation);
     }
@@ -33,9 +33,9 @@ const loadOperations = async (strapi: Strapi) => {
 /** The implementation of the Strapi Lifecylce hooks of the operation collection type */
 const lifecycleOperation = async (lifecycleHook: StrapiLifecycleHook, operation: Operation) => {
   operation =
-    (await strapi.entityService.findOne('api::operation.operation', operation.id, {
+    ((await strapi.entityService.findOne('api::operation.operation', operation.id, {
       populate: ['organization.users'],
-    })) || operation;
+    })) as unknown as Operation) || operation;
   if (lifecycleHook === StrapiLifecycleHook.AFTER_CREATE) {
     const mapState = operation.mapState || {};
     operationCaches[operation.id] = { operation, connections: [], users: [], mapState, mapStateChanged: false };
@@ -100,7 +100,7 @@ const persistMapStates = async (strapi: Strapi) => {
       if (!operationCache.mapStateChanged) continue;
       await strapi.entityService.update('api::operation.operation', operationId, {
         data: {
-          mapState: operationCache.mapState,
+          mapState: operationCache.mapState as any,
         },
       });
       operationCache.mapStateChanged = false;
@@ -114,10 +114,10 @@ const persistMapStates = async (strapi: Strapi) => {
 /** Archive operations who are active and are not updated since 7 days */
 const archiveOperations = async (strapi: Strapi) => {
   try {
-    const activeOperations: Operation[] = await strapi.entityService.findMany('api::operation.operation', {
+    const activeOperations = (await strapi.entityService.findMany('api::operation.operation', {
       where: { status: OperationState.ACTIVE },
       limit: -1,
-    });
+    })) as unknown as Operation[];
     for (const operation of activeOperations) {
       if (new Date(operation.updatedAt).getTime() + WEEK > new Date().getTime()) continue;
       await strapi.entityService.update('api::operation.operation', operation.id, {
@@ -133,14 +133,13 @@ const archiveOperations = async (strapi: Strapi) => {
 
 const deleteGuestOperations = async (strapi: Strapi) => {
   try {
-    const guestUser: User = _.first(
-      await strapi.entityService.findMany('plugin::users-permissions.user', {
-        fields: ['id', 'username', 'email'],
-        filters: { username: 'zso_guest' },
-        populate: ['organization.operations'],
-        limit: 1,
-      })
-    );
+    const guestUsers = (await strapi.entityService.findMany('plugin::users-permissions.user', {
+      fields: ['id', 'username', 'email'],
+      filters: { username: 'zso_guest' },
+      populate: ['organization.operations'],
+      limit: 1,
+    })) as unknown as User[];
+    const guestUser = _.first(guestUsers);
     if (!guestUser?.organization?.operations) return;
     const { operations } = guestUser.organization;
     for (const operation of operations) {

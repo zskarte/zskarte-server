@@ -4,11 +4,9 @@ const uploadProviders = (env) => {
   const providers = {
     local: {
       config: {
-        providerOptions: {
-          sizeLimit: 32 * 1024 * 1024,
-          localServer: {
-            maxage: 300000,
-          },
+        sizeLimit: 32 * 1024 * 1024,
+        localServer: {
+          maxage: 300000,
         },
       },
     },
@@ -33,6 +31,7 @@ export default ({ env }) => ({
   io: {
     enabled: true,
     config: {
+      contentTypes: [],
       IOServerOptions: {
         transports: ['websocket'],
         cors: {
