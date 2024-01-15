@@ -9,7 +9,7 @@
     "start": "node socketio-test-client.js"
   },
   "dependencies": {
-    "axios": "^0.27.2",
-    "socket.io-client": "^4.5.1"
+    "axios": "^1.6.5",
+    "socket.io-client": "^4.7.4"
   }
 }
