@@ -16,9 +16,9 @@
     "prettify": "prettier --write \"**/*.{js,ts,html,css,json,md}\""
   },
   "dependencies": {
-    "@strapi/plugin-i18n": "^4.16.2",
-    "@strapi/plugin-users-permissions": "^4.16.2",
-    "@strapi/strapi": "^4.16.2",
+    "@strapi/plugin-i18n": "^4.17.0",
+    "@strapi/plugin-users-permissions": "^4.17.0",
+    "@strapi/strapi": "^4.17.0",
     "immer": "^10.0.3",
     "lodash": "^4.17.21",
     "pg": "^8.11.3",
@@ -35,7 +35,7 @@
     "eslint": "^8.56.0",
     "@typescript-eslint/eslint-plugin": "^6.18.1",
     "@typescript-eslint/parser": "^6.18.1",
-    "eslint-plugin-prettier": "^5.1.2",
-    "prettier": "^3.1.1"
+    "eslint-plugin-prettier": "^5.1.3",
+    "prettier": "^3.2.2"
   }
 }
