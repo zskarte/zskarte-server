@@ -1,5 +1,5 @@
 import { deleteExpiredAccessTokens } from '../src/state/access';
-import { archiveOperations, deleteGuestOperations, persistMapStates } from '../src/state/operation';
+import { archiveOperations, createMapStateSnapshots, deleteGuestOperations, persistMapStates } from '../src/state/operation';
 import { Strapi } from '@strapi/strapi';
 
 export default {
@@ -11,4 +11,6 @@ export default {
   '0 0 * * *': async ({ strapi }: { strapi: Strapi }) => await deleteGuestOperations(strapi),
   // Every hour delete expired access tokens
   '* * * * * *': async ({ strapi }: { strapi: Strapi }) => await deleteExpiredAccessTokens(strapi),
+  // Every 5 minutes
+  '*/5 * * * *': ({ strapi }: { strapi: Strapi }) => createMapStateSnapshots(strapi),
 };
