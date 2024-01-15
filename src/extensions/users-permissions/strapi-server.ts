@@ -16,7 +16,7 @@ export default (plugin) => {
         },
         populate: ['logo'],
         limit: 1,
-      })) as unknown as Organization[];
+      })) as Organization[];
       const organization = _.first(organizations);
       ctx.body.organization = organization;
     }

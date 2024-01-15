@@ -5,7 +5,7 @@
 import { factories } from '@strapi/strapi';
 import utils from '@strapi/utils';
 import _ from 'lodash';
-import { Access, AccessType, Operation, User } from '../../../definitions';
+import { Access, AccessTypes, Operation, User } from '../../../definitions';
 import crypto from 'crypto';
 import { Strapi } from '@strapi/strapi';
 const { sanitize } = utils;
@@ -46,7 +46,7 @@ export default factories.createCoreController('api::access.access', ({ strapi }:
         },
       },
       limit: 1,
-    })) as unknown as Access[];
+    })) as Access[];
     const access = _.first(accesses);
 
     if (!access) return ctx.unauthorized('Invalid access token');
@@ -56,7 +56,7 @@ export default factories.createCoreController('api::access.access', ({ strapi }:
     const accessUsers = (await strapi.entityService.findMany('plugin::users-permissions.user', {
       filters: { username: `operation_${access.type}` },
       limit: 1,
-    })) as unknown as User[];
+    })) as User[];
     const accessUser = _.first(accessUsers);
 
     if (!accessUser) return ctx.unauthorized(`Couldn't find the default access user for type ${access.type}`);
@@ -74,7 +74,7 @@ export default factories.createCoreController('api::access.access', ({ strapi }:
     const { name, type, operationId } = ctx.request.body;
 
     if (!type) return ctx.badRequest('You must define the "type" property');
-    if (!Object.values(AccessType).includes(type))
+    if (!Object.values(AccessTypes).includes(type))
       return ctx.badRequest('The "type" property has an invalid value. Allowed values are: [read, write, admin]');
 
     if (!operationId) return ctx.badRequest('You must define the "operationId" property');
@@ -88,7 +88,7 @@ export default factories.createCoreController('api::access.access', ({ strapi }:
         },
       },
       limit: 1,
-    })) as unknown as Operation[];
+    })) as Operation[];
     if (!operations.length)
       return ctx.badRequest('The operation you provided does not exist or the operation does not match your account organization!');
     const operation = _.first(operations);
