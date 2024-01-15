@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io/dist/socket';
 import _ from 'lodash';
 import { operationCaches } from './operation';
-import { OperationCache, PatchExtended, User, WEBSOCKET_EVENT } from '../definitions';
+import { OperationCache, PatchExtended, User, WebsocketEvent } from '../definitions';
 
 /** Handles new socket connections, checks the token and the needed query parameters. */
 const socketConnection = async ({ strapi }, socket: Socket) => {
@@ -20,7 +20,7 @@ const socketConnection = async ({ strapi }, socket: Socket) => {
     // Check if the token operationId matches the query operationId
     if (tokenOperationId && operationId !== tokenOperationId) {
       strapi.log.warn(
-        `Socket: ${socket.id} - OperationId: ${operationId} does not match provided access token OperationId: ${tokenOperationId}`
+        `Socket: ${socket.id} - OperationId: ${operationId} does not match provided access token OperationId: ${tokenOperationId}`,
       );
       socket.disconnect();
       return;
@@ -63,7 +63,7 @@ const broadcastPatches = (operationCache: OperationCache, identifier: string, pa
   const connections = _.filter(operationCache.connections, (c) => c.identifier !== identifier);
   for (const connection of connections) {
     try {
-      connection.socket.emit(WEBSOCKET_EVENT.STATE_PATCHES, patches);
+      connection.socket.emit(WebsocketEvent.STATE_PATCHES, patches);
     } catch (error) {
       connection.socket.disconnect();
       strapi.log.error(error);

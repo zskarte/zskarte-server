@@ -3,7 +3,7 @@ import { Strapi } from '@strapi/strapi';
 import _ from 'lodash';
 import crypto from 'crypto';
 
-import { Operation, OperationCache, OperationState, PatchExtended, StrapiLifecycleHook, User } from '../definitions';
+import { Operation, OperationCache, OperationStates, PatchExtended, StrapiLifecycleHook, StrapiLifecycleHooks, User } from '../definitions';
 import { broadcastPatches } from './socketio';
 
 const WEEK = 1000 * 60 * 60 * 24 * 7;
@@ -16,12 +16,12 @@ const operationCaches: { [key: number]: OperationCache } = {};
 const loadOperations = async (strapi: Strapi) => {
   try {
     const activeOperations = (await strapi.entityService.findMany('api::operation.operation', {
-      where: { status: OperationState.ACTIVE },
+      where: { status: OperationStates.ACTIVE },
       populate: ['organization'],
       limit: -1,
     })) as Operation[];
     for (const operation of activeOperations) {
-      await lifecycleOperation(StrapiLifecycleHook.AFTER_CREATE, operation);
+      await lifecycleOperation(StrapiLifecycleHooks.AFTER_CREATE, operation);
     }
   } catch (error) {
     strapi.log.error(error);
@@ -36,20 +36,20 @@ const lifecycleOperation = async (lifecycleHook: StrapiLifecycleHook, operation:
     ((await strapi.entityService.findOne('api::operation.operation', operation.id, {
       populate: ['organization.users'],
     })) as Operation) || operation;
-  if (lifecycleHook === StrapiLifecycleHook.AFTER_CREATE) {
+  if (lifecycleHook === StrapiLifecycleHooks.AFTER_CREATE) {
     const mapState = operation.mapState || {};
     operationCaches[operation.id] = { operation, connections: [], users: [], mapState, mapStateChanged: false };
     if (!operation.organization) return;
     operationCaches[operation.id].users.push(...operation.organization.users);
   }
-  if (lifecycleHook === StrapiLifecycleHook.AFTER_UPDATE) {
-    if (operation.status === OperationState.ARCHIVED) {
+  if (lifecycleHook === StrapiLifecycleHooks.AFTER_UPDATE) {
+    if (operation.status === OperationStates.ARCHIVED) {
       delete operationCaches[operation.id];
       return;
     }
     operationCaches[operation.id].operation = operation;
   }
-  if (lifecycleHook === StrapiLifecycleHook.AFTER_DELETE) {
+  if (lifecycleHook === StrapiLifecycleHooks.AFTER_DELETE) {
     delete operationCaches[operation.id];
   }
 };
@@ -115,14 +115,14 @@ const persistMapStates = async (strapi: Strapi) => {
 const archiveOperations = async (strapi: Strapi) => {
   try {
     const activeOperations = (await strapi.entityService.findMany('api::operation.operation', {
-      where: { status: OperationState.ACTIVE },
+      where: { status: OperationStates.ACTIVE },
       limit: -1,
     })) as Operation[];
     for (const operation of activeOperations) {
       if (new Date(operation.updatedAt).getTime() + WEEK > new Date().getTime()) continue;
       await strapi.entityService.update('api::operation.operation', operation.id, {
         data: {
-          status: OperationState.ARCHIVED,
+          status: OperationStates.ARCHIVED,
         },
       });
     }
