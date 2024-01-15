@@ -300,6 +300,7 @@ export interface ApiAccessAccess extends Schema.CollectionType {
     type: Attribute.Enumeration<['read', 'write', 'all']> & Attribute.Required & Attribute.DefaultTo<'read'>;
     name: Attribute.String;
     active: Attribute.Boolean & Attribute.Required & Attribute.DefaultTo<true>;
+    expiresOn: Attribute.DateTime;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::access.access', 'oneToOne', 'admin::user'> & Attribute.Private;

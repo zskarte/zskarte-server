@@ -7,4 +7,5 @@ export interface Access extends StrapiObject {
   operation: Operation;
   type: AccessType;
   active: boolean;
+  expiresOn?: Date;
 }
