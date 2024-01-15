@@ -19,7 +19,7 @@ const loadOperations = async (strapi: Strapi) => {
       where: { status: OperationState.ACTIVE },
       populate: ['organization'],
       limit: -1,
-    })) as unknown as Operation[];
+    })) as Operation[];
     for (const operation of activeOperations) {
       await lifecycleOperation(StrapiLifecycleHook.AFTER_CREATE, operation);
     }
@@ -35,7 +35,7 @@ const lifecycleOperation = async (lifecycleHook: StrapiLifecycleHook, operation:
   operation =
     ((await strapi.entityService.findOne('api::operation.operation', operation.id, {
       populate: ['organization.users'],
-    })) as unknown as Operation) || operation;
+    })) as Operation) || operation;
   if (lifecycleHook === StrapiLifecycleHook.AFTER_CREATE) {
     const mapState = operation.mapState || {};
     operationCaches[operation.id] = { operation, connections: [], users: [], mapState, mapStateChanged: false };
@@ -117,7 +117,7 @@ const archiveOperations = async (strapi: Strapi) => {
     const activeOperations = (await strapi.entityService.findMany('api::operation.operation', {
       where: { status: OperationState.ACTIVE },
       limit: -1,
-    })) as unknown as Operation[];
+    })) as Operation[];
     for (const operation of activeOperations) {
       if (new Date(operation.updatedAt).getTime() + WEEK > new Date().getTime()) continue;
       await strapi.entityService.update('api::operation.operation', operation.id, {
@@ -138,7 +138,7 @@ const deleteGuestOperations = async (strapi: Strapi) => {
       filters: { username: 'zso_guest' },
       populate: ['organization.operations'],
       limit: 1,
-    })) as unknown as User[];
+    })) as User[];
     const guestUser = _.first(guestUsers);
     if (!guestUser?.organization?.operations) return;
     const { operations } = guestUser.organization;

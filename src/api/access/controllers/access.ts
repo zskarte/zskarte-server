@@ -46,7 +46,7 @@ export default factories.createCoreController('api::access.access', ({ strapi }:
         },
       },
       limit: 1,
-    })) as unknown as Access[];
+    })) as Access[];
     const access = _.first(accesses);
 
     if (!access) return ctx.unauthorized('Invalid access token');
@@ -56,7 +56,7 @@ export default factories.createCoreController('api::access.access', ({ strapi }:
     const accessUsers = (await strapi.entityService.findMany('plugin::users-permissions.user', {
       filters: { username: `operation_${access.type}` },
       limit: 1,
-    })) as unknown as User[];
+    })) as User[];
     const accessUser = _.first(accessUsers);
 
     if (!accessUser) return ctx.unauthorized(`Couldn't find the default access user for type ${access.type}`);
@@ -88,7 +88,7 @@ export default factories.createCoreController('api::access.access', ({ strapi }:
         },
       },
       limit: 1,
-    })) as unknown as Operation[];
+    })) as Operation[];
     if (!operations.length)
       return ctx.badRequest('The operation you provided does not exist or the operation does not match your account organization!');
     const operation = _.first(operations);
