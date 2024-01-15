@@ -6,7 +6,7 @@
 
 import { factories } from '@strapi/strapi';
 import { Operation, PatchExtended } from '../../../definitions';
-import { operationCaches, updateMapState } from '../../../state/operation';
+import { operationCaches, updateCurrentLocation, updateMapState } from '../../../state/operation';
 
 export default factories.createCoreController('api::operation.operation', ({ strapi }) => ({
   async findOne(ctx) {
@@ -33,6 +33,16 @@ export default factories.createCoreController('api::operation.operation', ({ str
     const patches: PatchExtended[] = ctx.request.body;
     await updateMapState(operationid, identifier, patches);
     ctx.status = 200;
-    return {};
+  },
+  async currentLocation(ctx) {
+    const { identifier, operationid } = ctx.request.headers;
+    if (!identifier || !operationid) {
+      ctx.status = 400;
+      ctx.body = 'Missing headers: identifier or operationId';
+      return;
+    }
+    const { long, lat } = ctx.request.body;
+    await updateCurrentLocation(operationid, identifier, { long, lat });
+    ctx.status = 200;
   },
 }));

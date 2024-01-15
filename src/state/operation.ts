@@ -4,7 +4,7 @@ import _ from 'lodash';
 import crypto from 'crypto';
 
 import { Operation, OperationCache, OperationStates, PatchExtended, StrapiLifecycleHook, StrapiLifecycleHooks, User } from '../definitions';
-import { broadcastPatches } from './socketio';
+import { broadcastConnections, broadcastPatches } from './socketio';
 
 const WEEK = 1000 * 60 * 60 * 24 * 7;
 
@@ -93,6 +93,22 @@ const updateMapState = async (operationId: string, identifier: string, patches: 
   broadcastPatches(operationCache, identifier, patches);
 };
 
+/** Updates the current location of a connection */
+const updateCurrentLocation = async (operationId: string, identifier: string, longLat: { long: number; lat: number }) => {
+  const operationCache: OperationCache = operationCaches[operationId];
+  if (!operationCache) return;
+  for (const connection of operationCache.connections) {
+    try {
+      if (connection.identifier !== identifier) continue;
+      connection.currentLocation = longLat;
+      broadcastConnections(operationCache);
+    } catch (error) {
+      connection.socket.disconnect();
+      strapi.log.error(error);
+    }
+  }
+};
+
 /** Persist the map state to the database if something has changed */
 const persistMapStates = async (strapi: Strapi) => {
   try {
@@ -151,4 +167,13 @@ const deleteGuestOperations = async (strapi: Strapi) => {
   }
 };
 
-export { operationCaches, loadOperations, lifecycleOperation, updateMapState, persistMapStates, archiveOperations, deleteGuestOperations };
+export {
+  operationCaches,
+  loadOperations,
+  lifecycleOperation,
+  updateMapState,
+  updateCurrentLocation,
+  persistMapStates,
+  archiveOperations,
+  deleteGuestOperations,
+};
