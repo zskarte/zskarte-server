@@ -6,6 +6,8 @@ import crypto from 'crypto';
 import { Operation, OperationCache, OperationStates, PatchExtended, StrapiLifecycleHook, StrapiLifecycleHooks, User } from '../definitions';
 import { broadcastPatches } from './socketio';
 
+import type { JsonValue } from '@strapi/types/dist/types/core/attributes/json';
+
 const WEEK = 1000 * 60 * 60 * 24 * 7;
 const MIN = 1000 * 60;
 
@@ -171,7 +173,7 @@ const createMapStateSnapshots = async (strapi: Strapi) => {
       await strapi.entityService.create('api::map-snapshot.map-snapshot', {
         data: {
           operation,
-          mapState: operation.mapState as any,
+          mapState: operation.mapState as JsonValue,
           publishedAt: Date.now(),
         }
       })
