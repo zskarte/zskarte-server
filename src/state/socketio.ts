@@ -10,8 +10,9 @@ const socketConnection = async ({ strapi }, socket: Socket) => {
     const { token } = socket.handshake.auth;
     const operationId = parseInt(socket.handshake.query.operationId as string);
     const identifier = socket.handshake.query.identifier as string;
-    if (isNaN(operationId) || !token || !identifier) {
-      strapi.log.warn(`Socket: ${socket.id} - Empty token, operationId or identifier in handshake`);
+    const label = socket.handshake.query.label as string;
+    if (isNaN(operationId) || !token || !identifier || !label) {
+      strapi.log.warn(`Socket: ${socket.id} - Empty token, operationId, label or identifier in handshake`);
       socket.disconnect();
       return;
     }
@@ -43,8 +44,9 @@ const socketConnection = async ({ strapi }, socket: Socket) => {
       socket.disconnect();
       return;
     }
-    operationCache.connections.push({ user, socket, identifier });
+    operationCache.connections.push({ user, socket, identifier, label });
     strapi.log.info(`Socket Connected: ${socket.id}, ${user.email}, OperationId: ${operationId}`);
+    await broadcastConnections(operationCache);
     socket.on('disconnect', () => socketDisconnect(operationCache, socket));
   } catch (error) {
     socket.disconnect();
@@ -56,6 +58,27 @@ const socketConnection = async ({ strapi }, socket: Socket) => {
 const socketDisconnect = async (operationCache: OperationCache, socket: Socket) => {
   operationCache.connections = _.filter(operationCache.connections, (c) => c.socket.id !== socket.id);
   strapi.log.info(`Socket Disconnected: ${socket.id}`);
+  await broadcastConnections(operationCache);
+};
+
+/** Broadcasts the current connections to all currently connected sockets of an operation */
+const broadcastConnections = (operationCache: OperationCache) => {
+  const connections = operationCache.connections.map((c) => {
+    return {
+      user: c.user,
+      identifier: c.identifier,
+      label: c.label,
+      currentLocation: c.currentLocation,
+    };
+  });
+  for (const connection of operationCache.connections) {
+    try {
+      connection.socket.emit(WebsocketEvent.CONNECTIONS, connections);
+    } catch (error) {
+      connection.socket.disconnect();
+      strapi.log.error(error);
+    }
+  }
 };
 
 /** Broadcast received patches to all currently connected sockets of an operation */
@@ -71,4 +94,4 @@ const broadcastPatches = (operationCache: OperationCache, identifier: string, pa
   }
 };
 
-export { socketConnection, broadcastPatches };
+export { socketConnection, broadcastPatches, broadcastConnections };
