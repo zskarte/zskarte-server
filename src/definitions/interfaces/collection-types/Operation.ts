@@ -1,5 +1,6 @@
 import { Organization, StrapiObject } from '.';
 import { PatchExtended } from '../PatchExtended';
+import { MapSnapshot } from './MapSnapshot';
 
 export interface Operation extends StrapiObject {
   name: string;
@@ -8,4 +9,5 @@ export interface Operation extends StrapiObject {
   mapState: object;
   organization: Organization;
   patches: PatchExtended[];
+  mapSnapshots: MapSnapshot[];
 }

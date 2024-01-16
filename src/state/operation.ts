@@ -6,7 +6,10 @@ import crypto from 'crypto';
 import { Operation, OperationCache, OperationStates, PatchExtended, StrapiLifecycleHook, StrapiLifecycleHooks, User } from '../definitions';
 import { broadcastConnections, broadcastPatches } from './socketio';
 
+import type { Attribute } from '@strapi/strapi';
+
 const WEEK = 1000 * 60 * 60 * 24 * 7;
+const MIN = 1000 * 60;
 
 enablePatches();
 
@@ -167,6 +170,35 @@ const deleteGuestOperations = async (strapi: Strapi) => {
   }
 };
 
+const createMapStateSnapshots = async (strapi: Strapi) => {
+  try {
+    const activeOperations = (await strapi.entityService.findMany('api::operation.operation', {
+      where: { status: OperationStates.ACTIVE },
+      limit: -1,
+    })) as unknown as Operation[];
+
+    strapi.log.debug(`Found ${activeOperations.length} operation to create snapshots from`);
+
+    for (const operation of activeOperations) {
+      const fiveMins = MIN * 5;
+      // If the operation has not been updated in the last 5mins don't create a snapshot
+      if (new Date(operation.updatedAt).getTime() + fiveMins < new Date().getTime()) continue;
+
+      strapi.log.debug(`Creating snapshot for operation [${operation.id}]`);
+
+      await strapi.entityService.create('api::map-snapshot.map-snapshot', {
+        data: {
+          operation,
+          mapState: operation.mapState as Attribute.JsonValue,
+          publishedAt: Date.now(),
+        },
+      });
+    }
+  } catch (error) {
+    strapi.log.error(error);
+  }
+};
+
 export {
   operationCaches,
   loadOperations,
@@ -176,4 +208,5 @@ export {
   persistMapStates,
   archiveOperations,
   deleteGuestOperations,
+  createMapStateSnapshots,
 };
