@@ -283,83 +283,6 @@ export interface AdminTransferTokenPermission extends Schema.CollectionType {
   };
 }
 
-export interface ApiAccessAccess extends Schema.CollectionType {
-  collectionName: 'accesses';
-  info: {
-    singularName: 'access';
-    pluralName: 'accesses';
-    displayName: 'Access';
-    description: '';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    accessToken: Attribute.String & Attribute.Required & Attribute.Private & Attribute.Unique;
-    operation: Attribute.Relation<'api::access.access', 'oneToOne', 'api::operation.operation'>;
-    type: Attribute.Enumeration<['read', 'write', 'all']> & Attribute.Required & Attribute.DefaultTo<'read'>;
-    name: Attribute.String;
-    active: Attribute.Boolean & Attribute.Required & Attribute.DefaultTo<true>;
-    expiresOn: Attribute.DateTime;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<'api::access.access', 'oneToOne', 'admin::user'> & Attribute.Private;
-    updatedBy: Attribute.Relation<'api::access.access', 'oneToOne', 'admin::user'> & Attribute.Private;
-  };
-}
-
-export interface ApiOperationOperation extends Schema.CollectionType {
-  collectionName: 'operations';
-  info: {
-    singularName: 'operation';
-    pluralName: 'operations';
-    displayName: 'Operation';
-    description: '';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    name: Attribute.String & Attribute.Required;
-    description: Attribute.RichText;
-    status: Attribute.Enumeration<['active', 'archived']> & Attribute.Required & Attribute.DefaultTo<'active'>;
-    organization: Attribute.Relation<'api::operation.operation', 'manyToOne', 'api::organization.organization'>;
-    mapState: Attribute.JSON;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<'api::operation.operation', 'oneToOne', 'admin::user'> & Attribute.Private;
-    updatedBy: Attribute.Relation<'api::operation.operation', 'oneToOne', 'admin::user'> & Attribute.Private;
-  };
-}
-
-export interface ApiOrganizationOrganization extends Schema.CollectionType {
-  collectionName: 'organizations';
-  info: {
-    singularName: 'organization';
-    pluralName: 'organizations';
-    displayName: 'Organization';
-    description: '';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    name: Attribute.String & Attribute.Required;
-    mapLongitude: Attribute.Float & Attribute.DefaultTo<7.44297>;
-    mapLatitude: Attribute.Float & Attribute.DefaultTo<46.94635>;
-    mapZoomLevel: Attribute.Decimal & Attribute.DefaultTo<16>;
-    defaultLocale: Attribute.Enumeration<['de-CH', 'fr-CH', 'it-CH', 'en-US']> & Attribute.DefaultTo<'de-CH'>;
-    url: Attribute.String;
-    logo: Attribute.Media;
-    operations: Attribute.Relation<'api::organization.organization', 'oneToMany', 'api::operation.operation'>;
-    users: Attribute.Relation<'api::organization.organization', 'oneToMany', 'plugin::users-permissions.user'>;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<'api::organization.organization', 'oneToOne', 'admin::user'> & Attribute.Private;
-    updatedBy: Attribute.Relation<'api::organization.organization', 'oneToOne', 'admin::user'> & Attribute.Private;
-  };
-}
-
 export interface PluginUploadFile extends Schema.CollectionType {
   collectionName: 'files';
   info: {
@@ -641,6 +564,106 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
   };
 }
 
+export interface ApiAccessAccess extends Schema.CollectionType {
+  collectionName: 'accesses';
+  info: {
+    singularName: 'access';
+    pluralName: 'accesses';
+    displayName: 'Access';
+    description: '';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    accessToken: Attribute.String & Attribute.Required & Attribute.Private & Attribute.Unique;
+    operation: Attribute.Relation<'api::access.access', 'oneToOne', 'api::operation.operation'>;
+    type: Attribute.Enumeration<['read', 'write', 'all']> & Attribute.Required & Attribute.DefaultTo<'read'>;
+    name: Attribute.String;
+    active: Attribute.Boolean & Attribute.Required & Attribute.DefaultTo<true>;
+    expiresOn: Attribute.DateTime;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<'api::access.access', 'oneToOne', 'admin::user'> & Attribute.Private;
+    updatedBy: Attribute.Relation<'api::access.access', 'oneToOne', 'admin::user'> & Attribute.Private;
+  };
+}
+
+export interface ApiMapSnapshotMapSnapshot extends Schema.CollectionType {
+  collectionName: 'map_snapshots';
+  info: {
+    singularName: 'map-snapshot';
+    pluralName: 'map-snapshots';
+    displayName: 'Map Snapshot';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    mapState: Attribute.JSON;
+    operation: Attribute.Relation<'api::map-snapshot.map-snapshot', 'manyToOne', 'api::operation.operation'>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<'api::map-snapshot.map-snapshot', 'oneToOne', 'admin::user'> & Attribute.Private;
+    updatedBy: Attribute.Relation<'api::map-snapshot.map-snapshot', 'oneToOne', 'admin::user'> & Attribute.Private;
+  };
+}
+
+export interface ApiOperationOperation extends Schema.CollectionType {
+  collectionName: 'operations';
+  info: {
+    singularName: 'operation';
+    pluralName: 'operations';
+    displayName: 'Operation';
+    description: '';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    name: Attribute.String & Attribute.Required;
+    description: Attribute.RichText;
+    status: Attribute.Enumeration<['active', 'archived']> & Attribute.Required & Attribute.DefaultTo<'active'>;
+    organization: Attribute.Relation<'api::operation.operation', 'manyToOne', 'api::organization.organization'>;
+    mapState: Attribute.JSON;
+    mapSnapshots: Attribute.Relation<'api::operation.operation', 'oneToMany', 'api::map-snapshot.map-snapshot'>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<'api::operation.operation', 'oneToOne', 'admin::user'> & Attribute.Private;
+    updatedBy: Attribute.Relation<'api::operation.operation', 'oneToOne', 'admin::user'> & Attribute.Private;
+  };
+}
+
+export interface ApiOrganizationOrganization extends Schema.CollectionType {
+  collectionName: 'organizations';
+  info: {
+    singularName: 'organization';
+    pluralName: 'organizations';
+    displayName: 'Organization';
+    description: '';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    name: Attribute.String & Attribute.Required;
+    mapLongitude: Attribute.Float & Attribute.DefaultTo<7.44297>;
+    mapLatitude: Attribute.Float & Attribute.DefaultTo<46.94635>;
+    mapZoomLevel: Attribute.Decimal & Attribute.DefaultTo<16>;
+    defaultLocale: Attribute.Enumeration<['de-CH', 'fr-CH', 'it-CH', 'en-US']> & Attribute.DefaultTo<'de-CH'>;
+    url: Attribute.String;
+    logo: Attribute.Media;
+    operations: Attribute.Relation<'api::organization.organization', 'oneToMany', 'api::operation.operation'>;
+    users: Attribute.Relation<'api::organization.organization', 'oneToMany', 'plugin::users-permissions.user'>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<'api::organization.organization', 'oneToOne', 'admin::user'> & Attribute.Private;
+    updatedBy: Attribute.Relation<'api::organization.organization', 'oneToOne', 'admin::user'> & Attribute.Private;
+  };
+}
+
 declare module '@strapi/types' {
   export module Shared {
     export interface ContentTypes {
@@ -651,9 +674,6 @@ declare module '@strapi/types' {
       'admin::api-token-permission': AdminApiTokenPermission;
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
-      'api::access.access': ApiAccessAccess;
-      'api::operation.operation': ApiOperationOperation;
-      'api::organization.organization': ApiOrganizationOrganization;
       'plugin::upload.file': PluginUploadFile;
       'plugin::upload.folder': PluginUploadFolder;
       'plugin::content-releases.release': PluginContentReleasesRelease;
@@ -662,6 +682,10 @@ declare module '@strapi/types' {
       'plugin::users-permissions.permission': PluginUsersPermissionsPermission;
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
+      'api::access.access': ApiAccessAccess;
+      'api::map-snapshot.map-snapshot': ApiMapSnapshotMapSnapshot;
+      'api::operation.operation': ApiOperationOperation;
+      'api::organization.organization': ApiOrganizationOrganization;
     }
   }
 }

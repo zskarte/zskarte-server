@@ -36,6 +36,12 @@
     },
     "mapState": {
       "type": "json"
+    },
+    "mapSnapshots": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::map-snapshot.map-snapshot",
+      "mappedBy": "operation"
     }
   }
 }
