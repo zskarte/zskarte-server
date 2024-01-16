@@ -12,14 +12,14 @@
   },
   "pluginOptions": {},
   "attributes": {
+    "mapState": {
+      "type": "json"
+    },
     "operation": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::operation.operation",
-      "inversedBy": "map_snapshots"
-    },
-    "mapState": {
-      "type": "json"
+      "inversedBy": "mapSnapshots"
     }
   }
 }

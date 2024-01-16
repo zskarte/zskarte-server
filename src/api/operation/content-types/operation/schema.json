@@ -37,7 +37,7 @@
     "mapState": {
       "type": "json"
     },
-    "map_snapshots": {
+    "mapSnapshots": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::map-snapshot.map-snapshot",

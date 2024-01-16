@@ -601,8 +601,8 @@ export interface ApiMapSnapshotMapSnapshot extends Schema.CollectionType {
     draftAndPublish: true;
   };
   attributes: {
-    operation: Attribute.Relation<'api::map-snapshot.map-snapshot', 'manyToOne', 'api::operation.operation'>;
     mapState: Attribute.JSON;
+    operation: Attribute.Relation<'api::map-snapshot.map-snapshot', 'manyToOne', 'api::operation.operation'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -628,7 +628,7 @@ export interface ApiOperationOperation extends Schema.CollectionType {
     status: Attribute.Enumeration<['active', 'archived']> & Attribute.Required & Attribute.DefaultTo<'active'>;
     organization: Attribute.Relation<'api::operation.operation', 'manyToOne', 'api::organization.organization'>;
     mapState: Attribute.JSON;
-    map_snapshots: Attribute.Relation<'api::operation.operation', 'oneToMany', 'api::map-snapshot.map-snapshot'>;
+    mapSnapshots: Attribute.Relation<'api::operation.operation', 'oneToMany', 'api::map-snapshot.map-snapshot'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::operation.operation', 'oneToOne', 'admin::user'> & Attribute.Private;
