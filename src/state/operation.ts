@@ -103,7 +103,11 @@ const updateCurrentLocation = async (operationId: string, identifier: string, lo
   for (const connection of operationCache.connections) {
     try {
       if (connection.identifier !== identifier) continue;
-      connection.currentLocation = longLat;
+      if (!longLat?.long || !longLat?.lat) {
+        connection.currentLocation = undefined;
+      } else {
+        connection.currentLocation = longLat;
+      }
       broadcastConnections(operationCache);
     } catch (error) {
       connection.socket.disconnect();
