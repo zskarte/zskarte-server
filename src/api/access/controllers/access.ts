@@ -116,4 +116,14 @@ export default factories.createCoreController('api::access.access', ({ strapi }:
 
     ctx.send({ accessToken });
   },
+  async find(ctx) {
+    if (ctx.query.operationId) {
+      ctx.query.filters = {
+        operation: {
+          id: ctx.query.operationId,
+        },
+      };
+    }
+    return await super.find(ctx);
+  },
 }));
