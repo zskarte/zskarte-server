@@ -10,4 +10,5 @@ export interface Operation extends StrapiObject {
   organization: Organization;
   patches: PatchExtended[];
   mapSnapshots: MapSnapshot[];
+  eventStates: object;
 }

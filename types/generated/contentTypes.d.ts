@@ -629,6 +629,7 @@ export interface ApiOperationOperation extends Schema.CollectionType {
     organization: Attribute.Relation<'api::operation.operation', 'manyToOne', 'api::organization.organization'>;
     mapState: Attribute.JSON;
     mapSnapshots: Attribute.Relation<'api::operation.operation', 'oneToMany', 'api::map-snapshot.map-snapshot'>;
+    eventStates: Attribute.JSON;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::operation.operation', 'oneToOne', 'admin::user'> & Attribute.Private;
