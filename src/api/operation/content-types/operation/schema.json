@@ -21,10 +21,7 @@
     },
     "status": {
       "type": "enumeration",
-      "enum": [
-        "active",
-        "archived"
-      ],
+      "enum": ["active", "archived"],
       "default": "active",
       "required": true
     },
@@ -42,6 +39,9 @@
       "relation": "oneToMany",
       "target": "api::map-snapshot.map-snapshot",
       "mappedBy": "operation"
+    },
+    "eventStates": {
+      "type": "json"
     }
   }
 }

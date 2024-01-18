@@ -73,7 +73,7 @@ A postgresql databas management tool
 
 #### Create a database
 
-1. Open [pgadmin](http://localhost:7050/)
+1. Open [pgadmin](http://localhost:10050/)
 2. Login
    - Email: info@zskarte.ch
    - Password: zskarte
