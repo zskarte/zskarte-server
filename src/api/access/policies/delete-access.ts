@@ -1,6 +1,7 @@
-import { Access, Operation } from '../../../definitions';
+import { Strapi } from '@strapi/strapi';
+import { Access } from '../../../definitions';
 
-export default async (policyContext, _, { strapi }) => {
+export default async (policyContext, _, { strapi }: { strapi: Strapi }) => {
   // Is user logged in
   if (!policyContext?.state?.user) return false;
   if (!policyContext?.state?.route) return false;
@@ -10,11 +11,12 @@ export default async (policyContext, _, { strapi }) => {
   ((await strapi.entityService.findOne('api::access.access', accessId, {
     populate: ['operation'],
   })) as Access);
-  const operation =
-    ((await strapi.entityService.findOne('api::operation.operation', access.operation.id, {
-      populate: ['organization.users'],
-    })) as Operation);
-  const userIsAllowed = operation.organization.users.map(u => u.id).includes(policyContext?.state?.user.id);
-  if(!userIsAllowed) return false;
-  return true;
+  const count = await strapi.entityService.count('plugin::users-permissions.user', {
+    filters: {
+      organization: { operations: { id: access.operation.id } },
+      id: policyContext?.state?.user.id
+    }
+  })
+
+  return count > 0;
 };
