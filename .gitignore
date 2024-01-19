@@ -117,3 +117,4 @@ build
 ## Custom
 data
 dist
+.strapi

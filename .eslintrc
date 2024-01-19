@@ -1,3 +1,15 @@
 {
-  "extends": "@strapi-community"
+  "parser": "@typescript-eslint/parser",
+  "extends": ["plugin:@typescript-eslint/recommended"],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "ignorePatterns": ["types"],
+  "rules": {
+    "no-useless-return": 0,
+    "no-console": 2,
+    "quotes": [2, "single", { "avoidEscape": true }],
+    "@typescript-eslint/no-explicit-any": "off"
+  }
 }

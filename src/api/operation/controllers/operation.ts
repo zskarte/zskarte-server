@@ -5,10 +5,8 @@
  */
 
 import { factories } from '@strapi/strapi';
-import { Patch } from 'immer';
-import _ from 'lodash';
 import { Operation, PatchExtended } from '../../../definitions';
-import { operationCaches, updateMapState } from '../../../state/operation';
+import { operationCaches, updateCurrentLocation, updateMapState } from '../../../state/operation';
 
 export default factories.createCoreController('api::operation.operation', ({ strapi }) => ({
   async findOne(ctx) {
@@ -16,7 +14,7 @@ export default factories.createCoreController('api::operation.operation', ({ str
     const { query } = ctx;
 
     const entity: Operation = await strapi.service('api::operation.operation').findOne(id, query);
-    const sanitizedEntity: Operation = await this.sanitizeOutput(entity, ctx);
+    const sanitizedEntity = (await this.sanitizeOutput(entity, ctx)) as Operation;
 
     const operationCache = operationCaches[entity.id];
     if (operationCache) {
@@ -29,12 +27,22 @@ export default factories.createCoreController('api::operation.operation', ({ str
     const { identifier, operationid } = ctx.request.headers;
     if (!identifier || !operationid) {
       ctx.status = 400;
-      ctx.body = `Missing headers: identifier or operationId`;
-      return;
+      return { message: 'Missing headers: identifier or operationId'  }
     }
     const patches: PatchExtended[] = ctx.request.body;
     await updateMapState(operationid, identifier, patches);
     ctx.status = 200;
-    return {};
+    return { success: true };
+  },
+  async currentLocation(ctx) {
+    const { identifier, operationid } = ctx.request.headers;
+    if (!identifier || !operationid) {
+      ctx.status = 400;
+      return { message: 'Missing headers: identifier or operationId'  }
+    }
+    const { long, lat } = ctx.request.body;
+    await updateCurrentLocation(operationid, identifier, { long, lat });
+    ctx.status = 200;
+    return { success: true };
   },
 }));

@@ -40,6 +40,9 @@
       "type": "boolean",
       "required": true,
       "default": true
+    },
+    "expiresOn": {
+      "type": "datetime"
     }
   }
 }

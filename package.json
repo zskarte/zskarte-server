@@ -8,31 +8,33 @@
     "name": "ZSKarte Team"
   },
   "scripts": {
-    "develop": "strapi develop",
+    "dev": "strapi develop",
     "start": "strapi start",
     "build": "strapi build",
     "strapi": "strapi",
-    "lint": "eslint .",
+    "lint": "eslint --ext .ts --ignore-path .gitignore .",
     "prettify": "prettier --write \"**/*.{js,ts,html,css,json,md}\""
   },
   "dependencies": {
-    "@strapi/plugin-i18n": "^4.5.6",
-    "@strapi/plugin-users-permissions": "^4.5.6",
-    "@strapi/strapi": "^4.5.6",
-    "immer": "^9.0.17",
+    "@strapi/plugin-i18n": "^4.17.0",
+    "@strapi/plugin-users-permissions": "^4.17.0",
+    "@strapi/strapi": "^4.17.0",
+    "immer": "^10.0.3",
     "lodash": "^4.17.21",
-    "pg": "^8.8.0",
-    "strapi-plugin-io": "^1.1.4",
-    "strapi-provider-upload-azure-storage": "^2.1.0"
+    "pg": "^8.11.3",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-router-dom": "^5.2.0",
+    "strapi-plugin-io": "^2.0.5",
+    "strapi-provider-upload-azure-storage": "^3.3.0",
+    "styled-components": "^5.2.1"
   },
   "devDependencies": {
-    "@strapi-community/eslint-config": "^0.4.3",
-    "@types/lodash": "^4.14.191",
-    "eslint": "^8.31.0",
-    "prettier": "^2.8.2"
-  },
-  "engines": {
-    "node": ">=12.x.x <=18.x.x",
-    "npm": ">=6.0.0"
+    "@types/lodash": "^4.14.202",
+    "eslint": "^8.56.0",
+    "@typescript-eslint/eslint-plugin": "^6.18.1",
+    "@typescript-eslint/parser": "^6.18.1",
+    "eslint-plugin-prettier": "^5.1.3",
+    "prettier": "^3.2.2"
   }
 }

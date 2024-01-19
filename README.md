@@ -7,7 +7,7 @@ Strapi comes with a full featured [Command Line Interface](https://docs.strapi.i
 Start your Strapi application with autoReload enabled. [Learn more](https://docs.strapi.io/developer-docs/latest/developer-resources/cli/CLI.html#strapi-develop)
 
 ```
-yarn develop
+yarn dev
 ```
 
 ### `start`
@@ -73,7 +73,7 @@ A postgresql databas management tool
 
 #### Create a database
 
-1. Open [pgadmin](http://localhost:7050/)
+1. Open [pgadmin](http://localhost:10050/)
 2. Login
    - Email: info@zskarte.ch
    - Password: zskarte
@@ -97,6 +97,24 @@ docker exec -it pgadmin sh
 # Dump Actual connections into servers.json file to
 /venv/bin/python setup.py --dump-servers servers.json --user info@zskarte.ch
 ```
+
+#### Seed data & set up authorization
+The application needs some data in order to work propperly. Curently, there is no seeding mechanism for an example organization. Follow those steps to create one:
+1. Create an organization
+    - Content Manager -> Organisation -> Create new entry
+2. Create an user for the organization
+    - Content Manager -> User -> Create new entry
+      - Add role "Authenticated"
+      - Add organization (the one created in step 1)
+3. Set permissions for "Authenticated" role
+    - Settings -> User & Permissions Plugin -> Roles -> Authenticated
+      - Give all rights on Organization 
+      - Give all rights on Operation
+
+    
+
+### Environment Variables
+An .env file has to be located inside the root folder for the application to start. There is an example .env file in the repo called ".env.example". For local development only, you can use the example file (rename it to ".env").
 
 ## Azure
 
