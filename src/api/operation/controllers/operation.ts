@@ -33,6 +33,7 @@ export default factories.createCoreController('api::operation.operation', ({ str
     const patches: PatchExtended[] = ctx.request.body;
     await updateMapState(operationid, identifier, patches);
     ctx.status = 200;
+    return { success: true };
   },
   async currentLocation(ctx) {
     const { identifier, operationid } = ctx.request.headers;
@@ -44,5 +45,6 @@ export default factories.createCoreController('api::operation.operation', ({ str
     const { long, lat } = ctx.request.body;
     await updateCurrentLocation(operationid, identifier, { long, lat });
     ctx.status = 200;
+    return { success: true };
   },
 }));
