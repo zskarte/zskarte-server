@@ -27,22 +27,22 @@ export default factories.createCoreController('api::operation.operation', ({ str
     const { identifier, operationid } = ctx.request.headers;
     if (!identifier || !operationid) {
       ctx.status = 400;
-      ctx.body = 'Missing headers: identifier or operationId';
-      return;
+      return { message: 'Missing headers: identifier or operationId'  }
     }
     const patches: PatchExtended[] = ctx.request.body;
     await updateMapState(operationid, identifier, patches);
     ctx.status = 200;
+    return { success: true };
   },
   async currentLocation(ctx) {
     const { identifier, operationid } = ctx.request.headers;
     if (!identifier || !operationid) {
       ctx.status = 400;
-      ctx.body = 'Missing headers: identifier or operationId';
-      return;
+      return { message: 'Missing headers: identifier or operationId'  }
     }
     const { long, lat } = ctx.request.body;
     await updateCurrentLocation(operationid, identifier, { long, lat });
     ctx.status = 200;
+    return { success: true };
   },
 }));
