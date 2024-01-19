@@ -163,6 +163,8 @@ const deleteGuestOperations = async (strapi: Strapi) => {
     const { operations } = guestUser.organization;
     for (const operation of operations) {
       strapi.log.info(`Deleting operation ${operation.name} of guest user`);
+      await strapi.db.query('api::map-snapshot.map-snapshot').deleteMany({ filters: { operation: { id: operation.id } } });
+      await strapi.db.query('api::access.access').deleteMany({ filters: { operation: { id: operation.id } } });
       await strapi.entityService.delete('api::operation.operation', operation.id);
     }
   } catch (error) {
