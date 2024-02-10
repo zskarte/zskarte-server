@@ -37,6 +37,8 @@ Different containerized services to use in the development process like postgres
 mkdir -p data/postgresql
 # Add the UID 1001 (non-root user of postgresql) as the folder owner
 chown -R 1001:1001 data/postgresql
+# prepare the database connections persist file
+touch servers.json
 ```
 
 ### Docker-Compose
@@ -63,9 +65,12 @@ docker-compose down
 docker compose down
 ```
 
+### Environment Variables
+An .env file has to be located inside the root folder for the application to start. There is an example .env file in the repo called ".env.example". For local development only, you can use the example file (rename it to ".env").
+
 ### PGAdmin
 
-A postgresql databas management tool
+A postgresql database management tool
 
 - PostgreSQL:
   - User: postgres
@@ -95,26 +100,47 @@ A postgresql databas management tool
 # Execute inside pgadmin docker container
 docker exec -it pgadmin sh
 # Dump Actual connections into servers.json file to
-/venv/bin/python setup.py --dump-servers servers.json --user info@zskarte.ch
+/venv/bin/python setup.py dump-servers --user info@zskarte.ch servers.json
 ```
+##### Troubleshooting
+Your should have created empty file servers.json before starting the container (with docker compose) or docker would create an folder, that does not fit the needs.
+If this happen use
+```bash
+/venv/bin/python setup.py dump-servers --user info@zskarte.ch servers.json/file
+```
+to save the configuration instead.
+Than stop the compose, move the file out of the folder, delete the folder and rename file to server.json.
+Now remove the old pgadmin-zskarte (`docker rm pgadmin-zskarte`) and start the compose again.
 
 #### Seed data & set up authorization
 The application needs some data in order to work propperly. Curently, there is no seeding mechanism for an example organization. Follow those steps to create one:
-1. Create an organization
+1. Open the [strapi admin](http://localhost:1337/admin) (call `yarn start` if not yet started)
+2. Create an organization
     - Content Manager -> Organisation -> Create new entry
-2. Create an user for the organization
+3. Create an user for the organization
     - Content Manager -> User -> Create new entry
       - Add role "Authenticated"
-      - Add organization (the one created in step 1)
-3. Set permissions for "Authenticated" role
+      - Add organization (the one created in step 2)
+4. Set permissions for "Authenticated" role
     - Settings -> User & Permissions Plugin -> Roles -> Authenticated
       - Give all rights on Organization 
       - Give all rights on Operation
+5. Set permissions for "Public" role (to make login page work)
+    - Settings -> User & Permissions Plugin -> Roles -> Public
+      - Give "find" right on Organization
+      - Give "find" right on Users-permission -> USER
 
-    
-
-### Environment Variables
-An .env file has to be located inside the root folder for the application to start. There is an example .env file in the repo called ".env.example". For local development only, you can use the example file (rename it to ".env").
+##### Enable guest login
+To activate this function you need to add a special organisation with specific user & password:
+1. Create an organization
+    - Content Manager -> Organisation -> Create new entry
+      - Name the Organisation "ZSO Gast (1h)"
+2. Create an user for the organization
+    - Content Manager -> User -> Create new entry
+      - Name the user "zso_guest"
+      - Use password "zsogast"
+      - Add role "Authenticated"
+      - Add organization "ZSO Gast (1h)"
 
 ## Azure
 
