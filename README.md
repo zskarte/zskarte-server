@@ -123,8 +123,9 @@ The application needs some data in order to work propperly. Curently, there is n
       - Add organization (the one created in step 2)
 4. Set permissions for "Authenticated" role
     - Settings -> User & Permissions Plugin -> Roles -> Authenticated
-      - Give all rights on Organization 
+      - Give all rights on Organization
       - Give all rights on Operation
+      - Give "find" and "findOne" rights on Map-snapshot
 5. Set permissions for "Public" role (to make login page work)
     - Settings -> User & Permissions Plugin -> Roles -> Public
       - Give "find" right on Organization
@@ -141,6 +142,39 @@ To activate this function you need to add a special organisation with specific u
       - Use password "zsogast"
       - Add role "Authenticated"
       - Add organization "ZSO Gast (1h)"
+
+##### Enable share links
+To activate this function you need to update rights, add a special users and authenticate roles:
+1. Set permissions for "Authenticated" role
+    - Settings -> User & Permissions Plugin -> Roles -> Authenticated
+      - Give all rights on Access
+2. Set permissions for "Public" role (to make login page work)
+    - Settings -> User & Permissions Plugin -> Roles -> Public
+      - Give "token" rights on Access
+3. Create roles for share modes (read/write)
+    - Settings -> User & Permissions Plugin -> Roles -> Create new entry
+      - Name the role "ShareRead"
+      - Use "Read role for share links" as description
+      - Give "currentLocation", "find", "findOne" right on Operation
+      - Give "find" and "findOne" rights on Map-snapshot
+      - Give "me" right on Users-permission -> USER
+    - Settings -> User & Permissions Plugin -> Roles -> Create new entry
+      - Name the role "ShareWrite"
+      - Use "Write role for share links" as description
+      - Give "currentLocation", "findOne", "find", "patch", "update" right on Operation
+      - Give "find" and "findOne" rights on Map-snapshot
+      - Give "me" right on Users-permission -> USER
+4. Create an user for the Share roles
+    - Content Manager -> User -> Create new entry
+      - Name the user "operation_read"
+      - Use a secure password
+      - Add role "ShareRead"
+      - Add NO organization
+    - Content Manager -> User -> Create new entry
+      - Name the user "operation_write"
+      - Use a secure password
+      - Add role "ShareWrite"
+      - Add NO organization
 
 ## Azure
 
