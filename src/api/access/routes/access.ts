@@ -3,8 +3,9 @@
  */
 
 import { factories } from '@strapi/strapi';
+import { DataAccessMiddlewareRoutesConfig } from '../../../middlewares/DataAccessMiddlewareRoutesConfig';
 
-export default factories.createCoreRouter('api::access.access', {
+export default factories.createCoreRouter('api::access.access', DataAccessMiddlewareRoutesConfig('api::access.access', true, false, {
   config: {
     find: {
       policies: ['api::access.find-access'],
@@ -13,4 +14,4 @@ export default factories.createCoreRouter('api::access.access', {
       policies: ['api::access.delete-access'],
     }
   },
-});
+}));
