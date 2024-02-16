@@ -5,12 +5,6 @@
  */
 
 import { factories } from '@strapi/strapi';
-import { DataAccessMiddlewareRoutesConfig } from '../../../middlewares/DataAccessMiddlewareRoutesConfig';
+import { AccessControlMiddlewareRoutesConfig } from '../../../middlewares/AccessControlMiddlewareConfig';
 
-export default factories.createCoreRouter('api::operation.operation', DataAccessMiddlewareRoutesConfig('api::operation.operation', false, true, {
-  config: {
-    findOne: {
-      policies: ['api::operation.findone-accesstoken'],
-    },
-  },
-}));
+export default factories.createCoreRouter('api::operation.operation', AccessControlMiddlewareRoutesConfig({type: 'api::operation.operation', hasOperation: false, hasOrganization: true}));

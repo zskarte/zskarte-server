@@ -1,3 +1,6 @@
+import { CreateAccessControlMiddlewareConfig } from '../../../middlewares/AccessControlMiddlewareConfig';
+import { AccessControlType } from '../../../definitions';
+
 export default {
   routes: [
     {
@@ -5,7 +8,7 @@ export default {
       path: '/operations/mapstate/patch',
       handler: 'operation.patch',
       config: {
-        middlewares: [{ name: 'global::accessControl', config: {type:'api::operation.operation', hasOperation:false, hasOrganization:true} }]
+        middlewares: [CreateAccessControlMiddlewareConfig({type:'api::operation.operation', hasOperation:false, hasOrganization:true, check: AccessControlType.BY_ID})]
       }
     },
   ],

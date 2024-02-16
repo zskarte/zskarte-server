@@ -2,6 +2,17 @@ import { Socket } from 'socket.io/dist/socket';
 import _ from 'lodash';
 import { operationCaches } from './operation';
 import { OperationCache, PatchExtended, User, WebsocketEvent } from '../definitions';
+//import { sanitize } from '@strapi/utils';
+
+const sanitizeUser = (user) => {
+  //return sanitize.contentAPI.output(user, strapi.getModel('plugin::users-permissions.user'), { auth }) as Promise<User>;
+  // there is no ctx.state.auth available in this context (in strapi.requestContext.get();)
+  // remove private fields by hand...
+  delete user.password;
+  delete user.resetPasswordToken;
+  delete user.confirmationToken;
+  return user;
+};
 
 /** Handles new socket connections, checks the token and the needed query parameters. */
 const socketConnection = async ({ strapi }, socket: Socket) => {
@@ -44,7 +55,8 @@ const socketConnection = async ({ strapi }, socket: Socket) => {
       socket.disconnect();
       return;
     }
-    operationCache.connections.push({ user, socket, identifier, label });
+    const sanitizedUser = sanitizeUser(user);
+    operationCache.connections.push({ user:sanitizedUser, socket, identifier, label });
     strapi.log.info(`Socket Connected: ${socket.id}, ${user.email}, OperationId: ${operationId}`);
     await broadcastConnections(operationCache);
     socket.on('disconnect', () => socketDisconnect(operationCache, socket));
