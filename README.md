@@ -123,12 +123,13 @@ The application needs some data in order to work propperly. Curently, there is n
       - Add organization (the one created in step 2)
 4. Set permissions for "Authenticated" role
     - Settings -> User & Permissions Plugin -> Roles -> Authenticated
-      - Give all rights on Organization
+      - Give "find" and "findOne" rights on Organization
       - Give all rights on Operation
       - Give "find" and "findOne" rights on Map-snapshot
+      - Give "me" right on Users-permission -> USER
 5. Set permissions for "Public" role (to make login page work)
     - Settings -> User & Permissions Plugin -> Roles -> Public
-      - Give "find" right on Organization
+      - Give "forLogin" right on Organization
       - Give "find" right on Users-permission -> USER
 
 ##### Enable guest login
