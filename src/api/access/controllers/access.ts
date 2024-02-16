@@ -65,7 +65,10 @@ export default factories.createCoreController('api::access.access', ({ strapi }:
 
     const token = jwt.issue({ id: accessUser.id, operationId: access.operation.id, permission: access.type });
 
-    await strapi.entityService.delete('api::access.access', access.id)
+    //delete if it's a short time access token only
+    if (accessToken.length < 32) {
+      await strapi.entityService.delete('api::access.access', access.id);
+    }
 
     ctx.send({
       jwt: token,
