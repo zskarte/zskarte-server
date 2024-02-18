@@ -124,7 +124,7 @@ The application needs some data in order to work propperly. Curently, there is n
 4. Set permissions for "Authenticated" role
     - Settings -> User & Permissions Plugin -> Roles -> Authenticated
       - Give "find" and "findOne" rights on Organization
-      - Give all rights on Operation
+      - Give all rights (except "delete" and "update") on Operation
       - Give "find" and "findOne" rights on Map-snapshot
       - Give "me" right on Users-permission -> USER
 5. Set permissions for "Public" role (to make login page work)
@@ -156,13 +156,13 @@ To activate this function you need to update rights, add a special users and aut
     - Settings -> User & Permissions Plugin -> Roles -> Create new entry
       - Name the role "ShareRead"
       - Use "Read role for share links" as description
-      - Give "currentLocation", "find", "findOne" right on Operation
+      - Give "currentLocation", "findOne", "overview" right on Operation
       - Give "find" and "findOne" rights on Map-snapshot
       - Give "me" right on Users-permission -> USER
     - Settings -> User & Permissions Plugin -> Roles -> Create new entry
       - Name the role "ShareWrite"
       - Use "Write role for share links" as description
-      - Give "currentLocation", "findOne", "find", "patch", "update" right on Operation
+      - Give "currentLocation", "findOne", "overview", "patch", "updateMeta" right on Operation
       - Give "find" and "findOne" rights on Map-snapshot
       - Give "me" right on Users-permission -> USER
 4. Create an user for the Share roles
