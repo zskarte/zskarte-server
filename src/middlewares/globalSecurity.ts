@@ -17,29 +17,30 @@ export default (config, { strapi }: { strapi: Strapi }) => {
     //also remove any "population" (for same reasons) => add separate endpoint for the use cases where needed
     delete ctx.query.population;
     const after = JSON.stringify(ctx.query);
-    if (before != after){
-      strapi.log.info('[global::globalSecurity]: query adjusted, was:' + before);
+    if (before !== after){
+      strapi.log.info(`[global::globalSecurity]: query adjusted, was:${before}`);
     }
 
-    await next();
+    const result = await next();
 
     //verify the accessControl middleware is executed
     if (!ctx.state.accessControlExecuted){
       //the accessControl middleware is not executed
       if (ctx.request.url.startsWith('/api/auth')){
         //do not block default auth endpoints
-        return;
+        return result;
       }
       if (ctx.request.url.startsWith('/api/users/me')){
         //do not block users/me endpoint
-        return;
+        return result;
       }
 
       //do not override other invalid response
       if (ctx.response.status >= 200 && ctx.response.status < 300) {
-        strapi.log.warn('[global::globalSecurity]: blocked:' + ctx.request.url);
+        strapi.log.warn(`[global::globalSecurity]: blocked:${ctx.request.url}`);
         return ctx.forbidden('This action is forbidden, missing accessControl config.');
       }
     }
+    return result;
   };
 };

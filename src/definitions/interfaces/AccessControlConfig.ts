@@ -1,10 +1,8 @@
 import { Common } from '@strapi/strapi';
-import { AccessControlType } from '../../definitions';
+import { AccessControlType } from '..';
 
-export interface AccessControlConfig {
-  type: Common.UID.ContentType;
-  hasOperation: boolean;
-  hasOrganization: boolean;
+export interface AccessControlConfig<T extends Common.UID.ContentType> {
+  type: T;
   check?: AccessControlType;
   notForShare?: boolean;
 }
