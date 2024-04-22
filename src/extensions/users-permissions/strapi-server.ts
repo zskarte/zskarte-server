@@ -5,7 +5,11 @@ export default (plugin) => {
   const me = plugin.controllers.user.me;
   const injectOrganization = async (ctx) => {
     //populate organisation and logo (for normal users)
-    ctx.query.populate = ['organization.logo'];
+    ctx.query.populate = {'organization': {'populate':  {
+      'logo': {},
+      'wms_sources': {'fields':['id']},
+      'map_layer_favorites': {'fields':['id']}
+    }}};
     await me(ctx);
     const { jwt } = strapi.plugins['users-permissions'].services;
     const { operationId } = await jwt.getToken(ctx);
@@ -17,12 +21,19 @@ export default (plugin) => {
             id: { $eq: operationId },
           },
         },
-        populate: ['logo'],
+        populate:  {
+          'logo': {},
+          'wms_sources': {'fields':['id']},
+          'map_layer_favorites': {'fields':['id']}
+        },
         limit: 1,
       })) as Organization[];
       const organization = _.first(organizations);
       ctx.body.organization = organization;
     }
+    //want to return wms-source/map-layer id's only, strapi cannot do that (v14.7) therefore the population with fields, and here map the results to an id array
+    ctx.body.organization.wms_sources = ctx.body.organization.wms_sources?.map((x) => x.id);
+    ctx.body.organization.map_layer_favorites = ctx.body.organization.map_layer_favorites?.map((x) => x.id);
   };
   plugin.controllers.user.me = injectOrganization;
 

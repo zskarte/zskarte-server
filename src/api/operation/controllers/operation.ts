@@ -91,4 +91,20 @@ export default factories.createCoreController('api::operation.operation', ({ str
     ctx.status = 200;
     return { success: true };
   },
+  async updateMapLayers(ctx) {
+    const { id } = ctx.params;
+    await this.validateQuery(ctx);
+    //const sanitizedQuery = await this.sanitizeQuery(ctx);
+    const data = ctx.request.body?.data;
+    if (!_.isObject(data)) {
+      ctx.status = 400;
+      return { message: 'Missing "data" payload in the request body' }
+    }
+
+    await strapi.service('api::operation.operation').update(id, {
+      data: {mapLayers: data},
+    });
+    ctx.status = 200;
+    return { success: true };
+  },
 }));

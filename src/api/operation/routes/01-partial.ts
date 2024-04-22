@@ -28,5 +28,13 @@ export default {
         middlewares: [CreateAccessControlMiddlewareConfig({type:'api::operation.operation', check: AccessControlTypes.UPDATE_BY_ID})]
       }
     },
+    {
+      method: 'PUT',
+      path: '/operations/:id/mapLayers',
+      handler: 'operation.updateMapLayers',
+      config: {
+        middlewares: [CreateAccessControlMiddlewareConfig({type:'api::operation.operation', check: AccessControlTypes.UPDATE_BY_ID})]
+      }
+    },
   ],
 };

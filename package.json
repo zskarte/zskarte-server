@@ -11,6 +11,7 @@
     "dev": "strapi develop",
     "start": "strapi start",
     "build": "strapi build",
+    "regenerate": "strapi ts:generate-types",
     "strapi": "strapi",
     "lint": "eslint --ext .ts --ignore-path .gitignore .",
     "prettify": "prettier --write \"**/*.{js,ts,html,css,json,md}\""
