@@ -105,7 +105,11 @@ export default <T extends Common.UID.ContentType>(config: AccessControlConfig<T>
           return ctx.unauthorized('This action is unauthorized, unknown context.');
         } else {
           if (hasPublic(config.type)){
-            ctx.query.filters = {'$or':[{'organization':{'id':{'$eq':userOrganisationId}}},{'public':{'$eq':true}}]};
+            if (userOrganisationId) {
+              ctx.query.filters = {'$or':[{'organization':{'id':{'$eq':userOrganisationId}}},{'public':{'$eq':true}}]};
+            } else {
+              ctx.query.filters = {'public':{'$eq':true}};
+            }
           } else {
             ctx.query.filters = {'organization':{'id':{'$eq':userOrganisationId}}};
           }
@@ -279,6 +283,13 @@ export default <T extends Common.UID.ContentType>(config: AccessControlConfig<T>
     const { jwt } = strapi.plugins['users-permissions'].services;
     const { operationId:jwtOperationId } = (await jwt.getToken(ctx)) ?? {};
     if (!userOrganisationId && !jwtOperationId){
+      if (hasPublic(config.type)){
+        if (config.check === AccessControlTypes.LIST) {
+          return doListChecks(ctx, next, userOrganisationId, jwtOperationId);
+        } else if (config.check === AccessControlTypes.BY_ID) {
+          return doByIdChecks(ctx, next, userOrganisationId, jwtOperationId);
+        }
+      }
       return ctx.unauthorized('This action is unauthorized.');
     }
     if (jwtOperationId && config.notForShare){
