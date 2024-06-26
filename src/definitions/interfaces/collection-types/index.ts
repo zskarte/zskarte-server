@@ -4,3 +4,4 @@ export * from './Role';
 export * from './User';
 export * from './Organization';
 export * from './Operation';
+export * from './MapSnapshot';
