@@ -21,7 +21,10 @@
     },
     "status": {
       "type": "enumeration",
-      "enum": ["active", "archived"],
+      "enum": [
+        "active",
+        "archived"
+      ],
       "default": "active",
       "required": true
     },
@@ -41,6 +44,9 @@
       "mappedBy": "operation"
     },
     "eventStates": {
+      "type": "json"
+    },
+    "mapLayers": {
       "type": "json"
     }
   }

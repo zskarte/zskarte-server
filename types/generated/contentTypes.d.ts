@@ -589,6 +589,33 @@ export interface ApiAccessAccess extends Schema.CollectionType {
   };
 }
 
+export interface ApiMapLayerMapLayer extends Schema.CollectionType {
+  collectionName: 'map_layers';
+  info: {
+    singularName: 'map-layer';
+    pluralName: 'map-layers';
+    displayName: 'Map Layer';
+    description: '';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    label: Attribute.String;
+    serverLayerName: Attribute.Text;
+    type: Attribute.Enumeration<['wms', 'wms_custom', 'wmts', 'aggregate', 'geojson', 'csv']>;
+    wms_source: Attribute.Relation<'api::map-layer.map-layer', 'manyToOne', 'api::wms-source.wms-source'>;
+    custom_source: Attribute.String;
+    options: Attribute.JSON;
+    public: Attribute.Boolean;
+    organization: Attribute.Relation<'api::map-layer.map-layer', 'oneToOne', 'api::organization.organization'>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<'api::map-layer.map-layer', 'oneToOne', 'admin::user'> & Attribute.Private;
+    updatedBy: Attribute.Relation<'api::map-layer.map-layer', 'oneToOne', 'admin::user'> & Attribute.Private;
+  };
+}
+
 export interface ApiMapSnapshotMapSnapshot extends Schema.CollectionType {
   collectionName: 'map_snapshots';
   info: {
@@ -630,6 +657,7 @@ export interface ApiOperationOperation extends Schema.CollectionType {
     mapState: Attribute.JSON;
     mapSnapshots: Attribute.Relation<'api::operation.operation', 'oneToMany', 'api::map-snapshot.map-snapshot'>;
     eventStates: Attribute.JSON;
+    mapLayers: Attribute.JSON;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::operation.operation', 'oneToOne', 'admin::user'> & Attribute.Private;
@@ -658,10 +686,38 @@ export interface ApiOrganizationOrganization extends Schema.CollectionType {
     logo: Attribute.Media;
     operations: Attribute.Relation<'api::organization.organization', 'oneToMany', 'api::operation.operation'>;
     users: Attribute.Relation<'api::organization.organization', 'oneToMany', 'plugin::users-permissions.user'>;
+    wms_sources: Attribute.Relation<'api::organization.organization', 'oneToMany', 'api::wms-source.wms-source'>;
+    map_layer_favorites: Attribute.Relation<'api::organization.organization', 'oneToMany', 'api::map-layer.map-layer'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::organization.organization', 'oneToOne', 'admin::user'> & Attribute.Private;
     updatedBy: Attribute.Relation<'api::organization.organization', 'oneToOne', 'admin::user'> & Attribute.Private;
+  };
+}
+
+export interface ApiWmsSourceWmsSource extends Schema.CollectionType {
+  collectionName: 'wms_sources';
+  info: {
+    singularName: 'wms-source';
+    pluralName: 'wms-sources';
+    displayName: 'WMS Source';
+    description: '';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    label: Attribute.String;
+    type: Attribute.Enumeration<['wms', 'wmts']>;
+    url: Attribute.String;
+    attribution: Attribute.JSON;
+    public: Attribute.Boolean;
+    organization: Attribute.Relation<'api::wms-source.wms-source', 'oneToOne', 'api::organization.organization'>;
+    map_layers: Attribute.Relation<'api::wms-source.wms-source', 'oneToMany', 'api::map-layer.map-layer'>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<'api::wms-source.wms-source', 'oneToOne', 'admin::user'> & Attribute.Private;
+    updatedBy: Attribute.Relation<'api::wms-source.wms-source', 'oneToOne', 'admin::user'> & Attribute.Private;
   };
 }
 
@@ -684,9 +740,11 @@ declare module '@strapi/types' {
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
       'api::access.access': ApiAccessAccess;
+      'api::map-layer.map-layer': ApiMapLayerMapLayer;
       'api::map-snapshot.map-snapshot': ApiMapSnapshotMapSnapshot;
       'api::operation.operation': ApiOperationOperation;
       'api::organization.organization': ApiOrganizationOrganization;
+      'api::wms-source.wms-source': ApiWmsSourceWmsSource;
     }
   }
 }
