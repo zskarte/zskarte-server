@@ -5,9 +5,11 @@
  */
 
 import { factories } from '@strapi/strapi';
-import { Operation, PatchExtended } from '../../../definitions';
+import { Operation, PatchExtended, OperationStates } from '../../../definitions';
 import { operationCaches, updateCurrentLocation, updateMapState } from '../../../state/operation';
 import _ from 'lodash';
+
+const allowedMetaFields = ['name', 'description', 'eventStates'];
 
 export default factories.createCoreController('api::operation.operation', ({ strapi }) => ({
   async findOne(ctx) {
@@ -46,6 +48,46 @@ export default factories.createCoreController('api::operation.operation', ({ str
       return { message: 'invalid coordinates' }
     }
     await updateCurrentLocation(operationid, identifier, { long, lat });
+    ctx.status = 200;
+    return { success: true };
+  },
+  async overview(ctx) {
+    ctx.query.fields = ['name','description','status','eventStates'];
+    return await this.find(ctx, undefined);
+  },
+  async archive(ctx) {
+    const { id } = ctx.params;
+    await strapi.entityService.update('api::operation.operation', id, {
+      data: {
+        status: OperationStates.ARCHIVED,
+      },
+    });
+    ctx.status = 200;
+    return { success: true };
+  },
+  async updateMeta(ctx) {
+    const { id } = ctx.params;
+    await this.validateQuery(ctx);
+    //const sanitizedQuery = await this.sanitizeQuery(ctx);
+    const data = ctx.request.body?.data;
+    if (!_.isObject(data)) {
+      ctx.status = 400;
+      return { message: 'Missing "data" payload in the request body' }
+    }
+
+    const sanitizedInputData = await this.sanitizeInput(data, ctx);
+    //filter out not allowed fields for meta call
+    const filteredInputData = {};
+    Object.keys(sanitizedInputData).forEach((field) => {
+      if (allowedMetaFields.includes(field)){
+        filteredInputData[field] = sanitizedInputData[field];
+      }
+    });
+
+    await strapi.service('api::operation.operation').update(id, {
+      //...sanitizedQuery,
+      data: filteredInputData,
+    });
     ctx.status = 200;
     return { success: true };
   },
