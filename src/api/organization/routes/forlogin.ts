@@ -5,11 +5,11 @@ export default {
   routes: [
     {
       method: 'GET',
-      path: '/accesses/auth/refresh',
-      handler: 'access.refresh',
+      path: '/organizations/forlogin',
+      handler: 'organization.forLogin',
       config: {
         //no real accessControl needed as no query parameter used inside => AccessControlType.NO_CHECK
-        middlewares: [CreateAccessControlMiddlewareConfig({type:'api::access.access', check: AccessControlTypes.NO_CHECK})]
+        middlewares: [CreateAccessControlMiddlewareConfig({type:'api::organization.organization', check: AccessControlTypes.NO_CHECK})]
       }
     },
   ],

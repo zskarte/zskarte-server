@@ -11,6 +11,7 @@ import { Strapi } from '@strapi/strapi';
 import { AccessTokenTypes } from '../../../definitions/constants/AccessTokenType';
 const { sanitize } = utils;
 
+const MINUTES_15 = 1000*60*15;
 const sanitizeUser = (user, ctx) => {
   const { auth } = ctx.state;
   const userSchema = strapi.getModel('plugin::users-permissions.user');
@@ -76,8 +77,9 @@ export default factories.createCoreController('api::access.access', ({ strapi }:
     });
   },
   async generate(ctx) {
-    const { user } = ctx.state;
-    const { id } = user;
+    const { id:organizationId } = ctx.state?.user?.organization || {};
+    if (!organizationId)
+      return ctx.forbidden('This action is forbidden, invalid context.');
     const { name, type, operationId, tokenType } = ctx.request.body;
 
     if (!type) return ctx.badRequest('You must define the "type" property');
@@ -89,9 +91,7 @@ export default factories.createCoreController('api::access.access', ({ strapi }:
       filters: {
         id: operationId,
         organization: {
-          users: {
-            id: { $eq: id },
-          },
+          id: { $eq: organizationId },
         },
       },
       limit: 1,
@@ -104,7 +104,7 @@ export default factories.createCoreController('api::access.access', ({ strapi }:
      crypto.randomBytes(16).toString('hex') :
      crypto.randomInt(999999).toString().padStart(6, '0');
 
-    const expiresOn = tokenType === AccessTokenTypes.LONG ? null : (new Date(Date.now()+1000*60*15));
+    const expiresOn = tokenType === AccessTokenTypes.LONG ? null : (new Date(Date.now()+MINUTES_15));
 
     await strapi.entityService.create('api::access.access', {
       data: {
