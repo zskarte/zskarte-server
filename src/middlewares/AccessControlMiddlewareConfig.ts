@@ -22,7 +22,7 @@ export const AccessControlMiddlewareRoutesConfig = <T extends Common.UID.Content
         middlewares: [CreateAccessControlMiddlewareConfig({ ...config, check: AccessControlTypes.UPDATE_BY_ID })],
       },
       delete: {
-        middlewares: [CreateAccessControlMiddlewareConfig({ ...config, check: AccessControlTypes.BY_ID })],
+        middlewares: [CreateAccessControlMiddlewareConfig({ ...config, check: AccessControlTypes.DELETE_BY_ID })],
       },
     },
   }, otherConf);
