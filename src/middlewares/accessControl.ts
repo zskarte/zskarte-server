@@ -37,7 +37,7 @@ export default <T extends Common.UID.ContentType>(config: AccessControlConfig<T>
             ctx.request.body.data?.operation,
             { populate: ['organization.id'], }
           );
-        } catch (ex){
+        } catch {
           //e.g. if ctx.request.body.data?.operation is an object not an id
         }
         if (!operation || operation.organization?.id !== userOrganisationId){
