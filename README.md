@@ -177,6 +177,27 @@ To activate this function you need to update rights, add a special users and aut
       - Add role "ShareWrite"
       - Add NO organization
 
+##### Enable Wms-Source and Map-Layer persistency
+To activate this function you need to update rights:
+1. Set permissions for "Authenticated" role
+    - Settings -> User & Permissions Plugin -> Roles -> Authenticated
+      - Give all rights on Map-layer
+      - Give "updateLayerSettings" rights on Organization
+      - Give all rights on Wms-source
+2. Set permissions for "Public" role (to access on local/offline mode)
+    - Settings -> User & Permissions Plugin -> Roles -> Public
+      - Give "find" and "findOne" rights on Map-layer
+      - Give "find" and "findOne" rights on Wms-source
+2. Set permissions for "ShareRead" role (to access on local/offline mode)
+    - Settings -> User & Permissions Plugin -> Roles -> ShareRead
+      - Give "find" and "findOne" rights on Map-layer
+      - Give "find" and "findOne" rights on Wms-source
+2. Set permissions for "ShareWrite" role (to access on local/offline mode)
+    - Settings -> User & Permissions Plugin -> Roles -> ShareWrite
+      - Give all rights (except "delete") on Map-layer
+      - Give "updateMapLayers" right on Operation
+      - Give all rights (except "delete") on Wms-source
+
 ## Azure
 
 ### Kubernetes Connect
